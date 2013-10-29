@@ -1,0 +1,4 @@
+[Project]
+Name=libabtree
+Manager=KDevCMakeManager
+VersionControl=kdevgit
