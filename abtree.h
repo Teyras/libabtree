@@ -13,7 +13,7 @@ private:
 	{
 		std::pair<TKey, TVal> pair;
 		item (std::pair<TKey, TVal> pair): pair(pair) {}
-		TKey & key ()
+		TKey key ()
 		{
 			return pair.first;
 		}
@@ -99,15 +99,31 @@ public:
 	{
 	public:
 		iterator (abtree * tree, abtree::vertex * current_vertex, size_t position):
-			tree_(tree), vertex_(current_vertex), position_(position)
+			tree_(tree), vertex_(current_vertex), position_(position), end_(false)
 		{}
 		
 		iterator & operator++ ()
 		{
-			position_++;
-			if (position_ == vertex_->item_count) {
-				
+			if (vertex_->children[0] != nullptr) {
+				while (vertex_->children[0] != nullptr) {
+					vertex_ = vertex_->children[position_ + 1];
+					position_ = 0;
+				}
+			} else {
+				position_++;
+				if (vertex_->children[0] == nullptr) {
+					position_++;
+				}
+				while (position_ > vertex_->item_count) {
+					if (vertex_->parent == nullptr) {
+						end_ = true;
+						break;
+					}
+					position_ = tree_->search(vertex_->parent, vertex_->items[0]->key());
+					vertex_ = vertex_->parent;
+				}
 			}
+			
 			return *this;
 		}
 		
@@ -120,10 +136,20 @@ public:
 		{
 			return &vertex_->items[position_]->pair;
 		}
+		
+		bool operator== (const iterator & it)
+		{
+			return (end_ && it.end_) || (
+				tree_ == it.tree_ &&
+				position_ == it.position_ &&
+				vertex_ == it.vertex_
+			);
+		}
 	private:
 		abtree * tree_;
 		abtree::vertex * vertex_;
 		size_t position_;
+		bool end_;
 	};
 	
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
