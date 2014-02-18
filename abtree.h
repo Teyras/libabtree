@@ -204,7 +204,7 @@ public:
 		
 		size_t i = search(cursor, new_item->key());
 		if (i < cursor->item_count) {
-			for (size_t j = cursor->item_count - 1; j > i && j > 0; j--) {
+			for (size_t j = cursor->item_count; j > i && j > 0; j--) {
 				cursor->items[j] = cursor->items[j - 1];
 			}
 		}
