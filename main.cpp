@@ -1,7 +1,8 @@
 #include <iostream>
 #include "abtree.h"
 
-int main(int argc, char ** argv) {
+int main (int argc, char ** argv)
+{
 	abtree/*<int, std::string>*/ tree(2, 3);
 	abtree::iterator it = tree.begin();
 	
@@ -19,7 +20,7 @@ int main(int argc, char ** argv) {
 	std::cout << tree.size() << std::endl;
 	
 	it = tree.begin();
-	for (size_t i = 0; i < 3; i++) {
+	for (size_t i = 0; i < sizeof(keys) / sizeof(int); i++) {
 		std::cout << it->first << " " << it->second << std::endl;
 		++it;
 	}
