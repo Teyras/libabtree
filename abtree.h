@@ -56,18 +56,20 @@ private:
 		cursor->items[middle] = nullptr;
 		cursor->item_count--;
 		
-		for (size_t i = middle + 1; i <= b; i++) {
-			new_vertex->children[i - (middle + 1)] = cursor->children[i];
-			cursor->children[i] = nullptr;
-		}
 		for (size_t i = middle + 1; i < b; i++) {
 			new_vertex->items[i - (middle + 1)] = cursor->items[i];
 			new_vertex->item_count++;
 			cursor->items[i] = nullptr;
 			cursor->item_count--;
 		}
+		for (size_t i = middle + 1; i < b + 1; i++) {
+			new_vertex->children[i - (middle + 1)] = cursor->children[i];
+			cursor->children[i] = nullptr;
+		}
 		
-		if (cursor->parent == nullptr) {
+		auto parent = cursor->parent;
+		
+		if (parent == nullptr) {
 			root = new vertex(b);
 			root->children[0] = cursor;
 			root->items[0] = median;
@@ -78,20 +80,22 @@ private:
 			return;
 		}
 		
-		size_t pos = search(cursor->parent, median->key());
-		for (size_t i = cursor->item_count; i > pos; i--) {
-			if (i < cursor->item_count) {
-				cursor->parent->items[i] = cursor->parent->items[i - 1];
-			}
-			cursor->parent->children[i] = cursor->parent->children[i - 1];
+		size_t pos = search(parent, median->key());
+		for (size_t i = parent->item_count; i > pos; i--) {
+			parent->items[i] = parent->items[i - 1];
+		}
+		for (size_t i = parent->item_count + 1; i > pos; i--) {
+			parent->children[i] = parent->children[i - 1];
 		}
 		
-		cursor->parent->items[pos] = median;
-		cursor->parent->children[pos] = new_vertex;
-		cursor->parent->item_count++;
+		parent->items[pos] = median;
+		parent->children[pos] = new_vertex;
+		parent->item_count++;
 		
-		if (cursor->parent->item_count == b) {
-			split_vertex(cursor->parent);
+		new_vertex->parent = parent;
+		
+		if (parent->item_count == b) {
+			split_vertex(parent);
 		}
 	}
 public:
@@ -111,10 +115,7 @@ public:
 				}
 			} else {
 				position_++;
-				if (vertex_->children[0] == nullptr) {
-					position_++;
-				}
-				while (position_ > vertex_->item_count) {
+				while (position_ >= vertex_->item_count) {
 					if (vertex_->parent == nullptr) {
 						end_ = true;
 						break;
