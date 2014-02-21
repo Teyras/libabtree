@@ -106,25 +106,36 @@ public:
 	{
 	public:
 		iterator (abtree * tree, abtree::vertex * current_vertex, size_t position):
-			tree_(tree), vertex_(current_vertex), position_(position), end_(false)
+			tree_(tree), vertex_(current_vertex), position_(position)
 		{}
 		
 		iterator & operator++ ()
 		{
+			bool descending = false;
 			if (vertex_->children[0] != nullptr) {
 				while (vertex_->children[0] != nullptr) {
-					vertex_ = vertex_->children[position_ + 1];
-					position_ = 0;
+					if (position_ < vertex_->item_count) {
+						if (!descending) {
+							vertex_ = vertex_->children[position_ + 1];
+							descending = true;
+						} else {
+							vertex_ = vertex_->children[0];
+						}
+						position_ = 0;
+						
+					} else {
+						break;
+					}
 				}
 			} else {
 				position_++;
 				while (position_ >= vertex_->item_count) {
 					if (vertex_->parent == nullptr) {
-						end_ = true;
-						break;
+						break; // incrementing end
+					} else {
+						position_ = tree_->search(vertex_->parent, vertex_->items[0]->key());
+						vertex_ = vertex_->parent;	
 					}
-					position_ = tree_->search(vertex_->parent, vertex_->items[0]->key());
-					vertex_ = vertex_->parent;
 				}
 			}
 			
@@ -143,17 +154,21 @@ public:
 		
 		bool operator== (const iterator & it)
 		{
-			return (end_ && it.end_) || (
+			return (
 				tree_ == it.tree_ &&
 				position_ == it.position_ &&
 				vertex_ == it.vertex_
 			);
 		}
+		
+		bool operator!= (const iterator & it)
+		{
+			return !operator==(it);
+		}
 	private:
 		abtree * tree_;
 		abtree::vertex * vertex_;
 		size_t position_;
-		bool end_;
 	};
 	
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
@@ -173,6 +188,11 @@ public:
 			cursor = cursor->children[0];
 		}
 		return iterator(this, cursor, 0);
+	}
+	
+	iterator end ()
+	{
+		return iterator(this, root, root->item_count);
 	}
 	
 	iterator find (const TKey & key, vertex * cursor = nullptr)

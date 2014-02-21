@@ -21,10 +21,8 @@ int main (int argc, char ** argv)
 	
 	std::cout << tree.size() << std::endl;
 	
-	it = tree.begin();
-	for (size_t i = 0; i < sizeof(keys) / sizeof(int); i++) {
+	for (it = tree.begin(); it != tree.end(); ++it) {
 		std::cout << it->first << " " << it->second << std::endl;
-		++it;
 	}
 	
 	return 0;
