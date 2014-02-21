@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 #include "abtree.h"
 
 int main (int argc, char ** argv)
@@ -6,23 +8,35 @@ int main (int argc, char ** argv)
 	abtree/*<int, std::string>*/ tree(2, 3);
 	abtree::iterator it = tree.begin();
 	
-	int keys[] = {
+	int key_data[] = {
 		9, 54, 68, 27, 18, 98, 74, 44, 1, 73, 
 		67, 75, 93, 92, 76, 69, 78, 4, 32, 52, 
 		81, 97, 71, 99, 87, 43, 53, 57, 30, 85, 
 		45, 95, 82, 63, 26, 65, 20, 28, 31, 94
 	};
 	
-	for (size_t i = 0; i < sizeof(keys) / sizeof(int); i++) {
-		tree.insert(std::make_pair(keys[i], std::string("foo")));
+	std::vector<int> keys(key_data, key_data + sizeof(key_data) / sizeof(int));
+	
+	for (int key: keys) {
+		tree.insert(std::make_pair(key, std::string("foo")));
 	}
 	
-	tree.dump();
+	std::sort(begin(keys), end(keys));
+	it = tree.begin();
+	bool ok = true;
 	
-	std::cout << tree.size() << std::endl;
+	for (int key: keys) {
+		if (key != it->first) {
+			ok = false;
+			break;
+		}
+		++it;
+	}
 	
-	for (it = tree.begin(); it != tree.end(); ++it) {
-		std::cout << it->first << " " << it->second << std::endl;
+	if (ok) {
+		std::cout << "Order OK" << std::endl;
+	} else {
+		std::cout << "Order sucks" << std::endl;
 	}
 	
 	return 0;
