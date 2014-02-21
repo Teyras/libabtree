@@ -205,7 +205,7 @@ public:
 			return iterator(this, cursor, i);
 		}
 		if (cursor->children[i] == nullptr) {
-			return iterator(this, cursor, i);
+			return end();
 		}
 		return find(key, cursor->children[i]);
 	}
