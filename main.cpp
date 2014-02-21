@@ -17,6 +17,8 @@ int main (int argc, char ** argv)
 		tree.insert(std::make_pair(keys[i], std::string("foo")));
 	}
 	
+	tree.dump();
+	
 	std::cout << tree.size() << std::endl;
 	
 	it = tree.begin();
