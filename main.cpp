@@ -3,6 +3,20 @@
 #include <algorithm>
 #include "abtree.h"
 
+void msg (std::string text)
+{
+	std::cout << "* " << text << std::endl;
+}
+
+void report (bool value)
+{
+	if (value) {
+		std::cout << "OK" << std::endl;
+	} else {
+		std::cout << "FAIL" << std::endl;
+	}
+}
+
 int main (int argc, char ** argv)
 {
 	abtree/*<int, std::string>*/ tree(2, 3);
@@ -16,6 +30,8 @@ int main (int argc, char ** argv)
 	};
 	
 	std::vector<int> keys(key_data, key_data + sizeof(key_data) / sizeof(int));
+	
+	msg("Checking insert & traversal order");
 	
 	for (int key: keys) {
 		tree.insert(std::make_pair(key, std::string("foo")));
@@ -33,11 +49,17 @@ int main (int argc, char ** argv)
 		++it;
 	}
 	
-	if (ok) {
-		std::cout << "Order OK" << std::endl;
-	} else {
-		std::cout << "Order sucks" << std::endl;
-	}
+	report(ok);
+	
+	msg("Trying to find something");
+	
+	int key = key_data[sizeof(key_data) / (2 * sizeof(int))];
+	it = tree.find(key);
+	report(key == it->first);
+	
+	msg("Trying to find a bogus key");
+	it = tree.find(666);
+	report(it == tree.end());
 	
 	return 0;
 }
