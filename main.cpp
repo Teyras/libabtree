@@ -57,6 +57,12 @@ int main (int argc, char ** argv)
 	it = tree.find(key);
 	report(key == it->first);
 	
+	msg("Trying to insert something that's already in the tree");
+	
+	tree.insert(std::make_pair(key, std::string("bar")));
+	it = tree.find(key);
+	report(it->second == std::string("bar"));
+	
 	msg("Trying to find a bogus key");
 	it = tree.find(666);
 	report(it == tree.end());
