@@ -112,10 +112,15 @@ private:
 				for (size_t j = cursor->item_count; j > 0; j--) {
 					cursor->items[j] = cursor->items[j - 1];
 				}
+				for (size_t j = cursor->item_count + 1; j > 0; j--) {
+					cursor->children[j] = cursor->children[j - 1];
+				}
 				cursor->items[0] = cursor->parent->items[i - 1];
+				cursor->children[0] = neighbour->children[neighbour->item_count];
 				cursor->item_count++;
 				cursor->parent->items[i - 1] = neighbour->items[neighbour->item_count - 1];
 				neighbour->items[neighbour->item_count - 1] = nullptr;
+				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
 			} else {
 				neighbour->items[neighbour->item_count] = cursor->parent->items[i - 1];
@@ -136,6 +141,24 @@ private:
 				if (cursor->parent->item_count < a - 1) {
 					refill_vertex(cursor->parent);
 				}
+				delete cursor;
+			}
+		} else {
+			auto neighbour = cursor->parent->children[1];
+			if (neighbour->item_count >= a) {
+				cursor->items[cursor->item_count] = cursor->parent->items[0];
+				cursor->children[cursor->item_count + 1] = neighbour->children[0];
+				cursor->item_count++;
+				cursor->parent->items[0] = neighbour->items[0];
+				for (size_t j = 0; j < neighbour->item_count - 1; j++) {
+					neighbour->items[j] = neighbour->items[j + 1];
+				}
+				for (size_t j = 0; j < neighbour->item_count; j++) {
+					neighbour->children[j] = neighbour->children[j + 1];
+				}
+				neighbour->item_count--;
+			} else {
+				
 			}
 		}
 	}
