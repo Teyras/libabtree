@@ -17,10 +17,21 @@ void report (bool value)
 	}
 }
 
+bool check_order (abtree/*<int, std::string>*/::iterator it, std::vector<int> & keys)
+{
+	for (int key: keys) {
+		if (key != it->first) {
+			return false;
+		}
+		++it;
+	}
+	return true;
+}
+
 int main (int argc, char ** argv)
 {
 	abtree/*<int, std::string>*/ tree(2, 3);
-	abtree::iterator it = tree.begin();
+	abtree/*<int, std::string>*/::iterator it = tree.begin();
 	
 	int key_data[] = {
 		9, 54, 68, 27, 18, 98, 74, 44, 1, 73, 
@@ -39,26 +50,15 @@ int main (int argc, char ** argv)
 	
 	std::sort(begin(keys), end(keys));
 	it = tree.begin();
-	bool ok = true;
 	
-	for (int key: keys) {
-		if (key != it->first) {
-			ok = false;
-			break;
-		}
-		++it;
-	}
-	
-	report(ok);
+	report(check_order(it, keys));
 	
 	msg("Trying to find something");
-	
 	int key = key_data[sizeof(key_data) / (2 * sizeof(int))];
 	it = tree.find(key);
 	report(key == it->first);
 	
 	msg("Trying to insert something that's already in the tree");
-	
 	tree.insert(std::make_pair(key, std::string("bar")));
 	it = tree.find(key);
 	report(it->second == std::string("bar"));
@@ -66,6 +66,12 @@ int main (int argc, char ** argv)
 	msg("Trying to find a bogus key");
 	it = tree.find(666);
 	report(it == tree.end());
+	
+	msg("Erasing a key");
+	tree.erase(key);
+	keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
+	it = tree.find(key);
+	report(it == tree.end() && check_order(tree.begin(), keys));
 	
 	return 0;
 }

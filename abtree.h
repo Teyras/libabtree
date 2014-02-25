@@ -101,6 +101,44 @@ private:
 			split_vertex(parent);
 		}
 	}
+	
+	void refill_vertex (vertex * cursor)
+	{
+		size_t i = search(cursor->parent, cursor->items[0]->key());
+		
+		if (i > 0) {
+			auto neighbour = cursor->parent->children[i - 1];
+			if (neighbour->item_count >= a) {
+				for (size_t j = cursor->item_count; j > 0; j--) {
+					cursor->items[j] = cursor->items[j - 1];
+				}
+				cursor->items[0] = cursor->parent->items[i - 1];
+				cursor->item_count++;
+				cursor->parent->items[i - 1] = neighbour->items[neighbour->item_count - 1];
+				neighbour->items[neighbour->item_count - 1] = nullptr;
+				neighbour->item_count--;
+			} else {
+				neighbour->items[neighbour->item_count] = cursor->parent->items[i - 1];
+				neighbour->item_count++;
+				for (size_t j = 0; j < cursor->item_count; j++) {
+					neighbour->items[neighbour->item_count] = cursor->items[j];
+					neighbour->children[neighbour->item_count] = cursor->children[j];
+					cursor->children[j]->parent = neighbour;
+					neighbour->item_count++;
+				}
+				neighbour->children[neighbour->item_count] = cursor->children[cursor->item_count];
+				
+				for (size_t j = i; j < cursor->parent->item_count; j++) {
+					cursor->parent->items[j - 1] = cursor->parent->items[j];
+					cursor->parent->children[j] = cursor->parent->children[j + 1];
+				}
+				cursor->parent->item_count--;
+				if (cursor->parent->item_count < a - 1) {
+					refill_vertex(cursor->parent);
+				}
+			}
+		}
+	}
 public:
 	class iterator
 	{
@@ -245,7 +283,41 @@ public:
 	
 	void erase (TKey key)
 	{
+		auto cursor = root;
+		size_t i;
+		while (true) {
+			i = search(cursor, key);
+			if (i < cursor->item_count && cursor->items[i]->key() == key) {
+				break;
+			}
+			if (cursor->children[0] == nullptr) {
+				return;
+			}
+			cursor = cursor->children[i];
+		}
 		
+		delete cursor->items[i];
+		
+		if (cursor->children[0] != nullptr) {
+			auto cursor_leaf = cursor->children[i];
+			while (cursor_leaf->children[0] != nullptr) {
+				cursor_leaf = cursor_leaf->children[cursor_leaf->item_count];
+			}
+			cursor->items[i] = cursor_leaf->items[cursor_leaf->item_count - 1];
+			cursor = cursor_leaf;
+			i = cursor_leaf->item_count - 1;
+		}
+		
+		for (size_t j = i; j < cursor->item_count - 1; j++) {
+			cursor->items[j] = cursor->items[j + 1];
+		}
+		cursor->item_count--;
+		
+		if (cursor->item_count < a - 1) {
+			refill_vertex(cursor);
+		}
+		
+		size_--;
 	}
 	
 	size_t size ()
