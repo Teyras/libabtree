@@ -73,5 +73,14 @@ int main (int argc, char ** argv)
 	it = tree.find(key);
 	report(it == tree.end() && check_order(tree.begin(), keys));
 	
+	msg("Erasing keys from root");
+	for (int i = 1; i <= 4; i++) {
+		key = tree.get_root_key();
+		tree.erase(key);
+		keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
+		it = tree.find(key);
+		report(it == tree.end() && check_order(tree.begin(), keys));
+	}
+	
 	return 0;
 }

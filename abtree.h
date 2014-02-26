@@ -353,6 +353,8 @@ public:
 		return size_;
 	}
 	
+	// DEBUG
+	
 	void dump (vertex * cursor = nullptr, size_t indent = 0) const
 	{
 		if (cursor == nullptr) {
@@ -372,6 +374,11 @@ public:
 		if (cursor->children[i] != nullptr) {
 			dump(cursor->children[cursor->item_count], indent + 1);
 		}
+	}
+	
+	TKey get_root_key ()
+	{
+		return root->items[0]->key();
 	}
 };
 
