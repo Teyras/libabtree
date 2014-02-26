@@ -123,25 +123,7 @@ private:
 				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
 			} else {
-				neighbour->items[neighbour->item_count] = cursor->parent->items[i - 1];
-				neighbour->item_count++;
-				for (size_t j = 0; j < cursor->item_count; j++) {
-					neighbour->items[neighbour->item_count] = cursor->items[j];
-					neighbour->children[neighbour->item_count] = cursor->children[j];
-					cursor->children[j]->parent = neighbour;
-					neighbour->item_count++;
-				}
-				neighbour->children[neighbour->item_count] = cursor->children[cursor->item_count];
-				
-				for (size_t j = i; j < cursor->parent->item_count; j++) {
-					cursor->parent->items[j - 1] = cursor->parent->items[j];
-					cursor->parent->children[j] = cursor->parent->children[j + 1];
-				}
-				cursor->parent->item_count--;
-				if (cursor->parent->item_count < a - 1) {
-					refill_vertex(cursor->parent);
-				}
-				delete cursor;
+				merge_vertices(neighbour, cursor, i);
 			}
 		} else {
 			auto neighbour = cursor->parent->children[1];
@@ -158,9 +140,32 @@ private:
 				}
 				neighbour->item_count--;
 			} else {
-				
+				merge_vertices(cursor, neighbour, 1); // TODO WTF?
 			}
 		}
+	}
+	
+	void merge_vertices (vertex * left, vertex * right, size_t key_pos)
+	{
+		left->items[left->item_count] = right->parent->items[key_pos - 1];
+		left->item_count++;
+		for (size_t j = 0; j < right->item_count; j++) {
+			left->items[left->item_count] = right->items[j];
+			left->children[left->item_count] = right->children[j];
+			right->children[j]->parent = left;
+			left->item_count++;
+		}
+		left->children[left->item_count] = right->children[right->item_count];
+		
+		for (size_t j = key_pos; j < right->parent->item_count; j++) {
+			right->parent->items[j - 1] = right->parent->items[j];
+			right->parent->children[j] = right->parent->children[j + 1];
+		}
+		right->parent->item_count--;
+		if (right->parent->item_count < a - 1) {
+			refill_vertex(right->parent);
+		}
+// 		delete right;
 	}
 public:
 	class iterator
