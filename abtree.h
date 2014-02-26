@@ -162,7 +162,7 @@ private:
 			right->parent->children[j] = right->parent->children[j + 1];
 		}
 		right->parent->item_count--;
-		if (right->parent->item_count < a - 1) {
+		if (right->parent->parent != nullptr && right->parent->item_count < a - 1) {
 			refill_vertex(right->parent);
 		}
 // 		delete right;
