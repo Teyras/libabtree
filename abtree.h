@@ -157,13 +157,17 @@ private:
 		}
 		left->children[left->item_count] = right->children[right->item_count];
 		
-		for (size_t j = key_pos; j < right->parent->item_count; j++) {
-			right->parent->items[j - 1] = right->parent->items[j];
-			right->parent->children[j] = right->parent->children[j + 1];
+		for (size_t j = key_pos; j < left->parent->item_count; j++) {
+			left->parent->items[j - 1] = left->parent->items[j];
+			left->parent->children[j] = left->parent->children[j + 1];
 		}
-		right->parent->item_count--;
-		if (right->parent->parent != nullptr && right->parent->item_count < a - 1) {
-			refill_vertex(right->parent);
+		left->parent->item_count--;
+		if (left->parent->parent != nullptr && left->parent->item_count < a - 1) {
+			refill_vertex(left->parent);
+		} else if (left->parent->parent == nullptr && left->parent->item_count == 0) {
+			root = left;
+// 			delete left->parent;
+			left->parent = nullptr;
 		}
 // 		delete right;
 	}
