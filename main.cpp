@@ -76,13 +76,21 @@ int main (int argc, char ** argv)
 	msg("Erasing keys from root");
 	for (int i = 1; i <= 4; i++) {
 		key = tree.get_root_key();
-		std::cout << "Erasing key: " << key << std::endl;
-		tree.dump();
 		tree.erase(key);
 		keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
 		it = tree.find(key);
 		report(it == tree.end() && check_order(tree.begin(), keys));
 	}
+	
+	msg("Deleting the whole thing");
+	for (int key: key_data) {
+		keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
+		tree.erase(key);
+		if (!check_order(tree.begin(), keys)) {
+			break;
+		}
+	}
+	report(tree.size() == 0);
 	
 	return 0;
 }

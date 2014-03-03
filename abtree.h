@@ -102,10 +102,9 @@ private:
 		}
 	}
 	
-	void refill_vertex (vertex * cursor)
+	vertex * refill_vertex (vertex * cursor)
 	{
 		size_t i = search(cursor->parent, cursor->items[0]->key());
-		
 		if (i > 0) {
 			auto neighbour = cursor->parent->children[i - 1];
 			if (neighbour->item_count >= a) {
@@ -122,8 +121,10 @@ private:
 				neighbour->items[neighbour->item_count - 1] = nullptr;
 				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
+				return cursor;
 			} else {
 				merge_vertices(neighbour, cursor, i - 1);
+				return neighbour;
 			}
 		} else {
 			auto neighbour = cursor->parent->children[1];
@@ -144,6 +145,7 @@ private:
 			} else {
 				merge_vertices(cursor, neighbour, 0);
 			}
+			return cursor;
 		}
 	}
 	
@@ -154,24 +156,30 @@ private:
 		for (size_t j = 0; j < right->item_count; j++) {
 			left->items[left->item_count] = right->items[j];
 			left->children[left->item_count] = right->children[j];
-			right->children[j]->parent = left;
+			if (right->children[j] != nullptr) {
+				right->children[j]->parent = left;
+			}
 			left->item_count++;
 		}
 		left->children[left->item_count] = right->children[right->item_count];
+		if (left->children[left->item_count] != nullptr) {
+			left->children[left->item_count]->parent = left;
+		}
 		
 		for (size_t j = key_pos + 1; j < left->parent->item_count; j++) {
 			left->parent->items[j - 1] = left->parent->items[j];
 			left->parent->children[j] = left->parent->children[j + 1];
 		}
 		left->parent->item_count--;
-		if (left->parent->parent != nullptr && left->parent->item_count < a - 1) {
+		
+		if (left->parent != root && left->parent->item_count < a - 1) {
 			refill_vertex(left->parent);
-		} else if (left->parent->parent == nullptr && left->parent->item_count == 0) {
+		} else if (left->parent == root && left->parent->item_count == 0) {
 			root = left;
-// 			delete left->parent;
+			delete left->parent;
 			left->parent = nullptr;
 		}
-// 		delete right;
+		delete right;
 	}
 public:
 	class iterator
@@ -339,19 +347,20 @@ public:
 			}
 			cursor->items[i] = cursor_leaf->items[cursor_leaf->item_count - 1];
 			cursor = cursor_leaf;
-			i = cursor_leaf->item_count - 1;
+			i = cursor->item_count - 1;
+		} else {
+			for (size_t j = i; j < cursor->item_count - 1; j++) {
+				cursor->items[j] = cursor->items[j + 1];
+			}
 		}
 		
-		for (size_t j = i; j < cursor->item_count - 1; j++) {
-			cursor->items[j] = cursor->items[j + 1];
-		}
-// 		cursor->items[cursor->item_count - 1] = nullptr;
 		cursor->item_count--;
 		
 		if (cursor->item_count < a - 1) {
-			refill_vertex(cursor);
+			cursor = refill_vertex(cursor);
 		}
 		
+// 		cursor->items[cursor->item_count - 1] = nullptr;
 		size_--;
 	}
 	
