@@ -123,7 +123,7 @@ private:
 				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
 			} else {
-				merge_vertices(neighbour, cursor, i);
+				merge_vertices(neighbour, cursor, i - 1);
 			}
 		} else {
 			auto neighbour = cursor->parent->children[1];
@@ -138,16 +138,18 @@ private:
 				for (size_t j = 0; j < neighbour->item_count; j++) {
 					neighbour->children[j] = neighbour->children[j + 1];
 				}
+				neighbour->items[neighbour->item_count - 1] = nullptr;
+				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
 			} else {
-				merge_vertices(cursor, neighbour, 1); // TODO WTF?
+				merge_vertices(cursor, neighbour, 0);
 			}
 		}
 	}
 	
 	void merge_vertices (vertex * left, vertex * right, size_t key_pos)
 	{
-		left->items[left->item_count] = right->parent->items[key_pos - 1];
+		left->items[left->item_count] = right->parent->items[key_pos];
 		left->item_count++;
 		for (size_t j = 0; j < right->item_count; j++) {
 			left->items[left->item_count] = right->items[j];
@@ -157,7 +159,7 @@ private:
 		}
 		left->children[left->item_count] = right->children[right->item_count];
 		
-		for (size_t j = key_pos; j < left->parent->item_count; j++) {
+		for (size_t j = key_pos + 1; j < left->parent->item_count; j++) {
 			left->parent->items[j - 1] = left->parent->items[j];
 			left->parent->children[j] = left->parent->children[j + 1];
 		}
@@ -343,6 +345,7 @@ public:
 		for (size_t j = i; j < cursor->item_count - 1; j++) {
 			cursor->items[j] = cursor->items[j + 1];
 		}
+// 		cursor->items[cursor->item_count - 1] = nullptr;
 		cursor->item_count--;
 		
 		if (cursor->item_count < a - 1) {
