@@ -384,7 +384,7 @@ public:
 			for (size_t j = 0; j < 4 * indent; j++) {
 				std::cout << " ";
 			}
-			std::cout << "*Key: " << cursor->items[i]->key() << " @" << cursor << std::endl;
+			std::cout << "*Key: " << cursor->items[i]->key() << std::endl;
 			
 		}
 		if (cursor->children[i] != nullptr) {
