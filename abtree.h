@@ -70,9 +70,7 @@ private:
 			cursor->children[i] = nullptr;
 		}
 		
-		auto parent = cursor->parent;
-		
-		if (parent == nullptr) {
+		if (cursor == root) {
 			root = new vertex(b);
 			root->children[0] = cursor;
 			root->items[0] = median;
@@ -82,6 +80,8 @@ private:
 			new_vertex->parent = root;
 			return;
 		}
+		
+		auto parent = cursor->parent;
 		
 		size_t pos = search(parent, median->key());
 		for (size_t i = parent->item_count; i > pos; i--) {
@@ -116,6 +116,9 @@ private:
 				}
 				cursor->items[0] = cursor->parent->items[i - 1];
 				cursor->children[0] = neighbour->children[neighbour->item_count];
+				if (cursor->children[0] != nullptr) {
+					cursor->children[0]->parent = cursor;
+				}
 				cursor->item_count++;
 				cursor->parent->items[i - 1] = neighbour->items[neighbour->item_count - 1];
 				neighbour->items[neighbour->item_count - 1] = nullptr;
@@ -131,6 +134,9 @@ private:
 			if (neighbour->item_count >= a) {
 				cursor->items[cursor->item_count] = cursor->parent->items[0];
 				cursor->children[cursor->item_count + 1] = neighbour->children[0];
+				if (neighbour->children[0] != nullptr) {
+					neighbour->children[0]->parent = cursor;
+				}
 				cursor->item_count++;
 				cursor->parent->items[0] = neighbour->items[0];
 				for (size_t j = 0; j < neighbour->item_count - 1; j++) {
