@@ -102,9 +102,9 @@ private:
 		}
 	}
 	
-	vertex * refill_vertex (vertex * cursor)
+	vertex * refill_vertex (vertex * parent, size_t i)
 	{
-		size_t i = search(cursor->parent, cursor->items[0]->key());
+		auto cursor = parent->children[i];
 		if (i > 0) {
 			auto neighbour = cursor->parent->children[i - 1];
 			if (neighbour->item_count >= a) {
@@ -157,6 +157,11 @@ private:
 	
 	void merge_vertices (vertex * left, vertex * right, size_t key_pos)
 	{
+		size_t pos;
+		if (left->parent != root) {
+			pos = search(left->parent->parent, left->parent->items[key_pos]->key());
+		}
+		
 		left->items[left->item_count] = right->parent->items[key_pos];
 		left->item_count++;
 		for (size_t j = 0; j < right->item_count; j++) {
@@ -179,7 +184,7 @@ private:
 		left->parent->item_count--;
 		
 		if (left->parent != root && left->parent->item_count < a - 1) {
-			refill_vertex(left->parent);
+			refill_vertex(left->parent->parent, pos);
 		} else if (left->parent == root && left->parent->item_count == 0) {
 			root = left;
 			delete left->parent;
@@ -332,7 +337,7 @@ public:
 	void erase (TKey key)
 	{
 		auto cursor = root;
-		size_t i;
+		size_t i, pos;
 		while (true) {
 			i = search(cursor, key);
 			if (i < cursor->item_count && cursor->items[i]->key() == key) {
@@ -353,17 +358,21 @@ public:
 			}
 			cursor->items[i] = cursor_leaf->items[cursor_leaf->item_count - 1];
 			cursor = cursor_leaf;
-			i = cursor->item_count - 1;
+			pos = search(cursor_leaf->parent, cursor->items[cursor->item_count -1]->key());
 		} else {
 			for (size_t j = i; j < cursor->item_count - 1; j++) {
 				cursor->items[j] = cursor->items[j + 1];
+			}
+			
+			if (cursor != root) {
+				pos = search(cursor->parent, key);
 			}
 		}
 		
 		cursor->item_count--;
 		
 		if (cursor != root && cursor->item_count < a - 1) {
-			cursor = refill_vertex(cursor);
+			cursor = refill_vertex(cursor->parent, pos);
 		}
 		
 // 		cursor->items[cursor->item_count - 1] = nullptr;
