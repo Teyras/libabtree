@@ -362,7 +362,7 @@ public:
 		
 		cursor->item_count--;
 		
-		if (cursor->item_count < a - 1) {
+		if (cursor != root && cursor->item_count < a - 1) {
 			cursor = refill_vertex(cursor);
 		}
 		
