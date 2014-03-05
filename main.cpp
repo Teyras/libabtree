@@ -32,6 +32,7 @@ int main (int argc, char ** argv)
 {
 	abtree/*<int, std::string>*/ tree(2, 3);
 	abtree/*<int, std::string>*/::iterator it = tree.begin();
+	bool status;
 	
 	int key_data[] = {
 		9, 54, 68, 27, 18, 98, 74, 44, 1, 73, 
@@ -74,13 +75,26 @@ int main (int argc, char ** argv)
 	report(it == tree.end() && check_order(tree.begin(), keys));
 	
 	msg("Erasing keys from root");
+	status = true;
 	for (int i = 1; i <= 4; i++) {
 		key = tree.get_root_key();
 		tree.erase(key);
 		keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
 		it = tree.find(key);
-		report(it == tree.end() && check_order(tree.begin(), keys));
+		status = status && (it == tree.end() && check_order(tree.begin(), keys));
 	}
+	report(status);
+	
+	msg("Erasing keys from the start");
+	status = true;
+	for (int i = 1; i <= 4; i++) {
+		key = tree.begin()->first;
+		tree.erase(key);
+		keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
+		it = tree.find(key);
+		status = status && (it == tree.end() && check_order(tree.begin(), keys));
+	}
+	report(status);
 	
 	msg("Deleting the whole thing");
 	for (int key: key_data) {
