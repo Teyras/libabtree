@@ -5,8 +5,8 @@
 #include "vertex.hpp"
 #include "iterator.hpp"
 
-template <typename TKey, typename TVal> class abtree 
-{
+template <typename TKey, typename TVal>
+class abtree {
 private:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	vertex * root;
