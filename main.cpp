@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "abtree.h"
+#include "abtree.hpp"
 
 void msg (std::string text)
 {
@@ -17,7 +17,7 @@ void report (bool value)
 	}
 }
 
-bool check_order (abtree/*<int, std::string>*/::iterator it, std::vector<int> & keys)
+bool check_order (abtree<int, std::string>::iterator it, std::vector<int> & keys)
 {
 	for (int key: keys) {
 		if (key != it->first) {
@@ -30,8 +30,8 @@ bool check_order (abtree/*<int, std::string>*/::iterator it, std::vector<int> & 
 
 int main (int argc, char ** argv)
 {
-	abtree/*<int, std::string>*/ tree(2, 3);
-	abtree/*<int, std::string>*/::iterator it = tree.begin();
+	abtree<int, std::string> tree(2, 3);
+	abtree<int, std::string>::iterator it = tree.begin();
 	bool status;
 	
 	int key_data[] = {

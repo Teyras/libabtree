@@ -1,58 +1,23 @@
-#ifndef _ABTREE_H_
-#define _ABTREE_H_
+#ifndef _ABTREE_HPP_
+#define _ABTREE_HPP_
 
 #include <iostream>
+#include "vertex.hpp"
+#include "iterator.hpp"
 
-typedef int TKey;
-typedef std::string TVal;
-
-/*template <typename TKey, typename TVal> */class abtree 
+template <typename TKey, typename TVal> class abtree 
 {
 private:
-	struct item
-	{
-		std::pair<TKey, TVal> pair;
-		item (std::pair<TKey, TVal> pair): pair(pair) {}
-		TKey key ()
-		{
-			return pair.first;
-		}
-		TVal & val ()
-		{
-			return pair.second;
-		}
-	};
-	
-	struct vertex
-	{
-		size_t item_count;
-		item ** items;
-		vertex ** children;
-		vertex * parent;
-		
-		vertex (size_t max_children): parent(nullptr), item_count(0)
-		{
-			items = new item * [max_children];
-			children = new vertex * [max_children + 1];
-		}
-	};
-	
+	typedef abtree_vertex<TKey, TVal> vertex;
 	vertex * root;
 	const size_t a, b;
 	size_t size_;
-	
-	size_t search (const vertex * vertex, TKey key) const
-	{
-		size_t i;
-		for (i = 0; i < vertex->item_count && key > vertex->items[i]->key(); i++);
-		return i;
-	}
 	
 	void split_vertex (vertex * cursor)
 	{
 		size_t middle = (b / 2);
 		vertex * new_vertex = new vertex(b);
-		item * median = cursor->items[middle];
+		auto median = cursor->items[middle];
 		cursor->items[middle] = nullptr;
 		cursor->item_count--;
 		
@@ -83,7 +48,7 @@ private:
 		
 		auto parent = cursor->parent;
 		
-		size_t pos = search(parent, median->key());
+		size_t pos = parent->search(median->key());
 		for (size_t i = parent->item_count; i > pos; i--) {
 			parent->items[i] = parent->items[i - 1];
 		}
@@ -159,7 +124,7 @@ private:
 	{
 		size_t pos;
 		if (left->parent != root) {
-			pos = search(left->parent->parent, left->parent->items[key_pos]->key());
+			pos = left->parent->parent->search(left->parent->items[key_pos]->key());
 		}
 		
 		left->items[left->item_count] = right->parent->items[key_pos];
@@ -193,74 +158,7 @@ private:
 		delete right;
 	}
 public:
-	class iterator
-	{
-	public:
-		iterator (abtree * tree, abtree::vertex * current_vertex, size_t position):
-			tree_(tree), vertex_(current_vertex), position_(position)
-		{}
-		
-		iterator & operator++ ()
-		{
-			bool descending = false;
-			if (vertex_->children[0] != nullptr) {
-				while (vertex_->children[0] != nullptr) {
-					if (position_ < vertex_->item_count) {
-						if (!descending) {
-							vertex_ = vertex_->children[position_ + 1];
-							descending = true;
-						} else {
-							vertex_ = vertex_->children[0];
-						}
-						position_ = 0;
-						
-					} else {
-						break;
-					}
-				}
-			} else {
-				position_++;
-				while (position_ >= vertex_->item_count) {
-					if (vertex_->parent == nullptr) {
-						break; // incrementing end
-					} else {
-						position_ = tree_->search(vertex_->parent, vertex_->items[0]->key());
-						vertex_ = vertex_->parent;	
-					}
-				}
-			}
-			
-			return *this;
-		}
-		
-		std::pair<TKey, TVal> & operator* ()
-		{
-			return vertex_->items[position_]->pair;
-		}
-		
-		std::pair<TKey, TVal> * operator-> ()
-		{
-			return &vertex_->items[position_]->pair;
-		}
-		
-		bool operator== (const iterator & it)
-		{
-			return (
-				tree_ == it.tree_ &&
-				position_ == it.position_ &&
-				vertex_ == it.vertex_
-			);
-		}
-		
-		bool operator!= (const iterator & it)
-		{
-			return !operator==(it);
-		}
-	private:
-		abtree * tree_;
-		abtree::vertex * vertex_;
-		size_t position_;
-	};
+	typedef abtree_iterator<TKey, TVal> iterator;
 	
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
 	{
@@ -278,12 +176,12 @@ public:
 		while (cursor->children[0] != nullptr) {
 			cursor = cursor->children[0];
 		}
-		return iterator(this, cursor, 0);
+		return iterator(cursor, 0);
 	}
 	
 	iterator end ()
 	{
-		return iterator(this, root, root->item_count);
+		return iterator(root, root->item_count);
 	}
 	
 	iterator find (const TKey & key, vertex * cursor = nullptr)
@@ -291,9 +189,9 @@ public:
 		if (cursor == nullptr) {
 			cursor = root;
 		}
-		size_t i = search(cursor, key);
+		size_t i = cursor->search(key);
 		if (i < cursor->item_count && cursor->items[i]->key() == key) {
-			return iterator(this, cursor, i);
+			return iterator(cursor, i);
 		}
 		if (cursor->children[i] == nullptr) {
 			return end();
@@ -303,10 +201,10 @@ public:
 	
 	void insert (std::pair<TKey, TVal> pair)
 	{
-		auto new_item = new item(pair);
+		auto new_item = new item<TKey, TVal>(pair);
 		auto cursor = root;
 		while (true) {
-			size_t i = search(cursor, new_item->key());
+			size_t i = cursor->search(new_item->key());
 			if (i < cursor->item_count && cursor->items[i]->key() == new_item->key()) {
 				cursor->items[i]->pair.second = new_item->val();
 				return;
@@ -317,7 +215,7 @@ public:
 			cursor = cursor->children[i];
 		}
 		
-		size_t i = search(cursor, new_item->key());
+		size_t i = cursor->search(new_item->key());
 		if (i < cursor->item_count) {
 			for (size_t j = cursor->item_count; j > i; j--) {
 				cursor->items[j] = cursor->items[j - 1];
@@ -339,7 +237,7 @@ public:
 		auto cursor = root;
 		size_t i, pos;
 		while (true) {
-			i = search(cursor, key);
+			i = cursor->search(key);
 			if (i < cursor->item_count && cursor->items[i]->key() == key) {
 				break;
 			}
@@ -358,14 +256,14 @@ public:
 			}
 			cursor->items[i] = cursor_leaf->items[cursor_leaf->item_count - 1];
 			cursor = cursor_leaf;
-			pos = search(cursor_leaf->parent, cursor->items[cursor->item_count -1]->key());
+			pos = cursor_leaf->parent->search(cursor->items[cursor->item_count -1]->key());
 		} else {
 			for (size_t j = i; j < cursor->item_count - 1; j++) {
 				cursor->items[j] = cursor->items[j + 1];
 			}
 			
 			if (cursor != root) {
-				pos = search(cursor->parent, key);
+				pos = cursor->parent->search(key);
 			}
 		}
 		
