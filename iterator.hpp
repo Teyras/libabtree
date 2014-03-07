@@ -5,15 +5,14 @@
 #include "vertex.hpp"
 
 template <typename TKey, typename TVal>
+class abtree;
+
+template <typename TKey, typename TVal>
 class abtree_iterator: public std::iterator<std::bidirectional_iterator_tag, std::pair<TKey, TVal> > {
 public:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	
 	abtree_iterator ()
-	{}
-	
-	abtree_iterator (vertex * current_vertex, size_t position):
-		vertex_(current_vertex), position_(position)
 	{}
 	
 	abtree_iterator & operator++ ()
@@ -114,6 +113,11 @@ public:
 		return !operator==(it);
 	}
 private:
+	friend class abtree<TKey, TVal>;
+	
+	abtree_iterator (vertex * current_vertex, size_t position): vertex_(current_vertex), position_(position)
+	{}
+	
 	vertex * vertex_;
 	size_t position_;
 };
