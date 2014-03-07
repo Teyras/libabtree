@@ -40,9 +40,21 @@ struct abtree_vertex
 	
 	size_t search (TKey key) const
 	{
-		size_t i;
-		for (i = 0; i < item_count && key > items[i]->key(); i++);
-		return i;
+		size_t i, step;
+		size_t first = 0;
+		size_t count = item_count;
+		
+		while (count > 0) {
+			i = first + (step = count / 2);
+			if (items[i]->key() < key) {
+				first = i + 1;
+				count -= step + 1;
+			} else {
+				count = step;
+			}
+		}
+		
+		return first;
 	}
 };
 
