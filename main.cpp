@@ -54,6 +54,18 @@ int main (int argc, char ** argv)
 	
 	report(check_order(it, keys));
 	
+	msg("Checking reverse traversal order");
+	status = true;
+	it = tree.end();
+	auto it2 = keys.end();
+	
+	while (it != tree.begin()) {
+		--it;
+		--it2;
+		status = status && it->first == *it2;
+	}
+	report(status);
+	
 	msg("Trying to find something");
 	int key = key_data[sizeof(key_data) / (2 * sizeof(int))];
 	it = tree.find(key);

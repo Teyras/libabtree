@@ -48,6 +48,34 @@ public:
 		return *this;
 	}
 	
+	abtree_iterator & operator-- ()
+	{
+		bool descending = false;
+		if (vertex_->children[0] != nullptr) {
+			while (vertex_->children[0] != nullptr) {
+				if (!descending) {
+					vertex_ = vertex_->children[position_];
+					descending = true;
+				} else {
+					vertex_ = vertex_->children[vertex_->item_count];
+				}
+				position_ = vertex_->item_count - 1;
+			}
+		} else {
+			while (position_ == 0) {
+				if (vertex_->parent == nullptr) {
+					break; // decrementing start
+				} else {
+					position_ = vertex_->parent->search(vertex_->items[0]->key());
+					vertex_ = vertex_->parent;
+				}
+			}
+			position_--;
+		}
+		
+		return *this;
+	}
+	
 	std::pair<TKey, TVal> & operator* ()
 	{
 		return vertex_->items[position_]->pair;
