@@ -49,6 +49,13 @@ public:
 		return *this;
 	}
 	
+	abtree_iterator operator++ (int)
+	{
+		auto old = *this;
+		this->operator++();
+		return old;
+	}
+	
 	abtree_iterator & operator-- ()
 	{
 		bool descending = false;
@@ -75,6 +82,13 @@ public:
 		}
 		
 		return *this;
+	}
+	
+	abtree_iterator operator-- (int)
+	{
+		auto old = *this;
+		this->operator--();
+		return old;
 	}
 	
 	std::pair<TKey, TVal> & operator* ()
