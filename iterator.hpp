@@ -1,10 +1,11 @@
 #ifndef _ABTREE_ITERATOR_HPP_
 #define _ABTREE_ITERATOR_HPP_
 
+#include <iterator>
 #include "vertex.hpp"
 
 template <typename TKey, typename TVal>
-class abtree_iterator {
+class abtree_iterator: public std::iterator<std::bidirectional_iterator_tag, std::pair<TKey, TVal> > {
 public:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	
