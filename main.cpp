@@ -31,7 +31,7 @@ bool check_order (abtree<int, std::string>::iterator it, std::vector<int> & keys
 int main (int argc, char ** argv)
 {
 	abtree<int, std::string> tree(2, 3);
-	abtree<int, std::string>::iterator it = tree.begin();
+	abtree<int, std::string>::iterator it;
 	bool status;
 	
 	int key_data[] = {

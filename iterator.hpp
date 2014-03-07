@@ -8,6 +8,9 @@ class abtree_iterator {
 public:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	
+	abtree_iterator ()
+	{}
+	
 	abtree_iterator (vertex * current_vertex, size_t position):
 		vertex_(current_vertex), position_(position)
 	{}
