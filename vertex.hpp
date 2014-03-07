@@ -32,6 +32,12 @@ struct abtree_vertex
 		children = new abtree_vertex<TKey, TVal> * [max_children + 1];
 	}
 	
+	~abtree_vertex ()
+	{
+		delete[] items;
+		delete[] children;
+	}
+	
 	size_t search (TKey key) const
 	{
 		size_t i;

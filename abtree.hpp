@@ -2,6 +2,7 @@
 #define _ABTREE_HPP_
 
 #include <iostream>
+#include <queue>
 #include "vertex.hpp"
 #include "iterator.hpp"
 
@@ -167,7 +168,22 @@ public:
 	
 	~abtree ()
 	{
+		std::queue<vertex *> queue;
+		queue.push(root);
 		
+		while (queue.size() > 0) {
+			vertex * cursor = queue.front();
+			for (size_t i = 0; i < cursor->item_count; i++) {
+				delete cursor->items[i];
+			}
+			for (size_t i = 0; i <= cursor->item_count; i++) {
+				if (cursor->children[i] != nullptr) {
+					queue.push(cursor->children[i]);
+				}
+			}
+			delete cursor;
+			queue.pop();
+		}
 	}
 	
 	iterator begin ()
