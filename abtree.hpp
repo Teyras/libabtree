@@ -222,7 +222,8 @@ public:
 		while (true) {
 			size_t i = cursor->search(new_item->key());
 			if (i < cursor->item_count && cursor->items[i]->key() == new_item->key()) {
-				cursor->items[i]->pair.second = new_item->val();
+				delete cursor->items[i];
+				cursor->items[i] = new_item;
 				return;
 			}
 			if (cursor->children[i] == nullptr) {
