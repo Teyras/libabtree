@@ -67,11 +67,15 @@ int main (int argc, char ** argv)
 	report(status);
 	
 	msg("Trying to find something");
-	int key = key_data[sizeof(key_data) / (2 * sizeof(int))];
-	it = tree.find(key);
-	report(key == it->first);
+	status = true;
+	for (int key: keys) {
+		it = tree.find(key);
+		status = status && key == it->first;
+	}
+	report(status);
 	
 	msg("Trying to insert something that's already in the tree");
+	int key = key_data[sizeof(key_data) / (2 * sizeof(int))];
 	tree.insert(std::make_pair(key, std::string("bar")));
 	it = tree.find(key);
 	report(it->second == std::string("bar"));
