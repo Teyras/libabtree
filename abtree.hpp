@@ -299,6 +299,11 @@ public:
 		return size_;
 	}
 	
+	bool empty ()
+	{
+		return size_ == 0;
+	}
+	
 	// DEBUG
 	
 	void dump (vertex * cursor = nullptr, size_t indent = 0) const
