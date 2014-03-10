@@ -215,6 +215,11 @@ public:
 		return find(key, cursor->children[i]);
 	}
 	
+	TVal & at (const TKey & key)
+	{
+		return find(key)->second;
+	}
+	
 	void insert (std::pair<TKey, TVal> pair)
 	{
 		auto new_item = new item<TKey, TVal>(pair);
