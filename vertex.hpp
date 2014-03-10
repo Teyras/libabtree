@@ -21,10 +21,10 @@ struct item
 template <typename TKey, typename TVal>
 struct abtree_vertex
 {
+	abtree_vertex * parent;
 	size_t item_count;
 	item<TKey, TVal> ** items;
 	abtree_vertex ** children;
-	abtree_vertex * parent;
 	
 	abtree_vertex (size_t max_children): parent(nullptr), item_count(0)
 	{
