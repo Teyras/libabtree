@@ -112,6 +112,8 @@ public:
 	{
 		return !operator==(it);
 	}
+	
+	operator abtree_iterator<TKey, TVal const> () const;
 private:
 	friend class abtree<TKey, TVal>;
 	
