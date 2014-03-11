@@ -164,7 +164,7 @@ public:
 	typedef abtree_iterator<TKey, const TVal> const_iterator;
 	typedef TKey key_type;
 	typedef TVal mapped_type;
-	typedef std::pair<key_type, mapped_type> value_type;
+	typedef std::pair<const key_type, mapped_type> value_type;
 	
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
 	{

@@ -6,9 +6,9 @@
 template <typename TKey, typename TVal>
 struct item
 {
-	std::pair<TKey, TVal> pair;
-	item (std::pair<TKey, TVal> pair): pair(pair) {}
-	TKey key ()
+	std::pair<const TKey, TVal> pair;
+	item (std::pair<const TKey, TVal> pair): pair(pair) {}
+	const TKey key ()
 	{
 		return pair.first;
 	}

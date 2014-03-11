@@ -90,12 +90,12 @@ public:
 		return old;
 	}
 	
-	std::pair<TKey, TVal> & operator* ()
+	std::pair<const TKey, TVal> & operator* ()
 	{
 		return vertex_->items[position_]->pair;
 	}
 	
-	std::pair<TKey, TVal> * operator-> ()
+	std::pair<const TKey, TVal> * operator-> ()
 	{
 		return &vertex_->items[position_]->pair;
 	}
