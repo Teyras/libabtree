@@ -161,6 +161,7 @@ private:
 	}
 public:
 	typedef abtree_iterator<TKey, TVal> iterator;
+	typedef abtree_iterator<TKey, const TVal> const_iterator;
 	typedef TKey key_type;
 	typedef TVal mapped_type;
 	typedef std::pair<key_type, mapped_type> value_type;
@@ -204,7 +205,8 @@ public:
 		return iterator(root, root->item_count);
 	}
 	
-	iterator find (const TKey & key, vertex * cursor = nullptr)
+	template<typename iterator>
+	iterator do_find (const TKey & key, vertex * cursor = nullptr)
 	{
 		if (cursor == nullptr) {
 			cursor = root;
@@ -216,7 +218,17 @@ public:
 		if (cursor->children[i] == nullptr) {
 			return end();
 		}
-		return find(key, cursor->children[i]);
+		return do_find<iterator>(key, cursor->children[i]);
+	}
+	
+	iterator find (const TKey & key)
+	{
+		return do_find<iterator>(key);
+	}
+	
+	const_iterator find (const TKey & key) const
+	{
+		return do_find<const_iterator>(key);
 	}
 	
 	TVal & at (const TKey & key)
