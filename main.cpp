@@ -85,7 +85,7 @@ int main (int argc, char ** argv)
 	it = tree.find(666);
 	report(it == tree.end());
 	
-	msg("Testing lower bound"); // Test data dependent
+	msg("Testing lower bound");
 	status = true;
 	for (int i = 0; i <= (--tree.end())->first; i++) {
 		if (!(tree.lower_bound(i)->first == *std::lower_bound(keys.begin(), keys.end(), i))) {
