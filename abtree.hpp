@@ -10,6 +10,7 @@ template <typename TKey, typename TVal>
 class abtree {
 private:
 	typedef abtree_vertex<TKey, TVal> vertex;
+	
 	vertex * root;
 	const size_t a, b;
 	size_t size_;
@@ -160,6 +161,9 @@ private:
 	}
 public:
 	typedef abtree_iterator<TKey, TVal> iterator;
+	typedef TKey key_type;
+	typedef TVal mapped_type;
+	typedef std::pair<key_type, mapped_type> value_type;
 	
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
 	{
@@ -220,7 +224,7 @@ public:
 		return find(key)->second;
 	}
 	
-	iterator insert (std::pair<TKey, TVal> pair)
+	iterator insert (value_type pair)
 	{
 		auto new_item = new item<TKey, TVal>(pair);
 		auto cursor = root;
