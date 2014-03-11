@@ -8,16 +8,14 @@ template <typename TKey, typename TVal>
 class abtree;
 
 template <typename TKey, typename TVal>
-class abtree_iterator_base: public std::iterator<std::bidirectional_iterator_tag, std::pair<TKey, TVal> > {
+class abtree_iterator: public std::iterator<std::bidirectional_iterator_tag, std::pair<TKey, TVal> > {
 public:
-	abtree_iterator_base ()
-	{
-		
-	}
-protected:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	
-	void forward ()
+	abtree_iterator ()
+	{}
+	
+	abtree_iterator & operator++ ()
 	{
 		bool descending = false;
 		if (vertex_->children[0] != nullptr) {
@@ -46,9 +44,18 @@ protected:
 				}
 			}
 		}
+		
+		return *this;
 	}
 	
-	void back ()
+	abtree_iterator operator++ (int)
+	{
+		auto old = *this;
+		this->operator++();
+		return old;
+	}
+	
+	abtree_iterator & operator-- ()
 	{
 		bool descending = false;
 		if (vertex_->children[0] != nullptr) {
@@ -72,46 +79,6 @@ protected:
 			}
 			position_--;
 		}
-	}
-	
-	friend class abtree<TKey, TVal>;
-	
-	abtree_iterator_base (vertex * current_vertex, size_t position): vertex_(current_vertex), position_(position)
-	{}
-	
-	vertex * vertex_;
-	size_t position_;
-};
-
-template <typename TKey, typename TVal>
-class abtree_iterator: public abtree_iterator_base<TKey, TVal> {
-public:
-	typedef abtree_vertex<TKey, TVal> vertex;
-	
-	abtree_iterator ()
-	{}
-	
-	abtree_iterator (vertex * current_vertex, size_t position): abtree_iterator_base<TKey, TVal>(current_vertex, position)
-	{
-	}
-	
-	abtree_iterator & operator++ ()
-	{
-		this->forward();
-		
-		return *this;
-	}
-	
-	abtree_iterator operator++ (int)
-	{
-		auto old = *this;
-		this->operator++();
-		return old;
-	}
-	
-	abtree_iterator & operator-- ()
-	{
-		this->back();
 		
 		return *this;
 	}
@@ -125,19 +92,19 @@ public:
 	
 	std::pair<TKey, TVal> & operator* ()
 	{
-		return this->vertex_->items[this->position_]->pair;
+		return vertex_->items[position_]->pair;
 	}
 	
 	std::pair<TKey, TVal> * operator-> ()
 	{
-		return &this->vertex_->items[this->position_]->pair;
+		return &vertex_->items[position_]->pair;
 	}
 	
 	bool operator== (const abtree_iterator & it)
 	{
 		return (
-			this->position_ == it.position_ &&
-			this->vertex_ == it.vertex_
+			position_ == it.position_ &&
+			vertex_ == it.vertex_
 		);
 	}
 	
@@ -145,6 +112,14 @@ public:
 	{
 		return !operator==(it);
 	}
+private:
+	friend class abtree<TKey, TVal>;
+	
+	abtree_iterator (vertex * current_vertex, size_t position): vertex_(current_vertex), position_(position)
+	{}
+	
+	vertex * vertex_;
+	size_t position_;
 };
 
 #endif
