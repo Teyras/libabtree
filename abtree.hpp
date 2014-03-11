@@ -224,6 +224,31 @@ public:
 		return find(key)->second;
 	}
 	
+	iterator lower_bound (const key_type & key)
+	{
+		auto cursor = root;
+		size_t i = cursor->search(key);
+		std::pair<vertex *, size_t> back = std::make_pair(root, root->item_count);
+		
+		while (cursor->children[0] != nullptr) {
+			if (i < cursor->item_count) {
+				if (cursor->items[i]->key() == key) {
+					return iterator(cursor, i);
+				}
+				back = std::make_pair(cursor, i);
+			}
+			cursor = cursor->children[i];
+			i = cursor->search(key);
+		}
+		
+		if (i == cursor->item_count) {
+			cursor = back.first;
+			i = back.second;
+		}
+		
+		return iterator(cursor, i);
+	}
+	
 	iterator insert (value_type pair)
 	{
 		auto new_item = new item<TKey, TVal>(pair);

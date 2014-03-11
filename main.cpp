@@ -85,6 +85,16 @@ int main (int argc, char ** argv)
 	it = tree.find(666);
 	report(it == tree.end());
 	
+	msg("Testing lower bound"); // Test data dependent
+	status = true;
+	for (int i = 0; i <= (--tree.end())->first; i++) {
+		if (!(tree.lower_bound(i)->first == *std::lower_bound(keys.begin(), keys.end(), i))) {
+			status = false;
+			break;
+		}
+	}
+	report(status);
+	
 	msg("Erasing a key");
 	tree.erase(key);
 	keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
