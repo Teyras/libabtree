@@ -220,7 +220,7 @@ public:
 		return find(key)->second;
 	}
 	
-	void insert (std::pair<TKey, TVal> pair)
+	iterator insert (std::pair<TKey, TVal> pair)
 	{
 		auto new_item = new item<TKey, TVal>(pair);
 		auto cursor = root;
@@ -229,7 +229,7 @@ public:
 			if (i < cursor->item_count && cursor->items[i]->key() == new_item->key()) {
 				delete cursor->items[i];
 				cursor->items[i] = new_item;
-				return;
+				return iterator(cursor, i);
 			}
 			if (cursor->children[i] == nullptr) {
 				break;
@@ -252,6 +252,7 @@ public:
 		}
 		
 		size_++;
+		return find(pair.first);
 	}
 	
 	void erase (TKey key)

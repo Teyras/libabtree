@@ -44,15 +44,16 @@ int main (int argc, char ** argv)
 	std::vector<int> keys(key_data, key_data + sizeof(key_data) / sizeof(int));
 	
 	msg("Checking insert & traversal order");
-	
+	status = true;
 	for (int key: keys) {
-		tree.insert(std::make_pair(key, std::string("foo")));
+		auto it = tree.insert(std::make_pair(key, std::string("foo")));
+		status = status && it->first == key;
 	}
 	
 	std::sort(begin(keys), end(keys));
 	it = tree.begin();
 	
-	report(check_order(it, keys));
+	report(status && check_order(it, keys));
 	
 	msg("Checking reverse traversal order");
 	status = true;
