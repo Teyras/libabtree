@@ -59,13 +59,13 @@ int main (int argc, char ** argv)
 	std::vector<int> int_data(1024 * 1024);
 	std::generate(int_data.begin(), int_data.end(), std::rand);
 	
-	std::cout << "* Map" << std::endl;
-	std::map<int, bool> map;
-	run_test<int>(map, int_data);
-	
 	std::cout << "* (2, 3) Tree" << std::endl;
 	abtree<int, bool> tree(2, 3);
 	run_test<int>(tree, int_data);
+	
+	std::cout << "* Map" << std::endl;
+	std::map<int, bool> map;
+	run_test<int>(map, int_data);
 	
 	return 0;
 }
