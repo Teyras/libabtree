@@ -95,6 +95,22 @@ int main (int argc, char ** argv)
 	}
 	report(status);
 	
+	msg("Testing upper bound");
+	status = true;
+	for (int i = 0; i <= (--tree.end())->first; i++) {
+		auto tree_upper = tree.upper_bound(i);
+		auto keys_upper = std::upper_bound(keys.begin(), keys.end(), i);
+		if (tree_upper == tree.end()) {
+			if (keys_upper != keys.end()) {
+				status = false;	
+			}
+		} else if (!(tree_upper->first == *keys_upper)) {
+			status = false;
+			break;
+		}
+	}
+	report(status);
+	
 	msg("Erasing a key");
 	tree.erase(key);
 	keys.erase(std::remove(keys.begin(), keys.end(), key), keys.end());
