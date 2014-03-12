@@ -54,14 +54,24 @@ void run_test (C & container, const std::vector<T> & data)
 	print_result("Delete", t);
 }
 
+template <typename T>
+void test_tree (size_t a, size_t b, const std::vector<T> & data)
+{
+	std::cout << "* (" << a << ", " << b << ") Tree" << std::endl;
+	abtree<T, bool> tree(a, b);
+	run_test<T>(tree, data);
+}
+
 int main (int argc, char ** argv)
 {
 	std::vector<int> int_data(1024 * 1024);
 	std::generate(int_data.begin(), int_data.end(), std::rand);
 	
-	std::cout << "* (2, 3) Tree" << std::endl;
-	abtree<int, bool> tree(2, 3);
-	run_test<int>(tree, int_data);
+	test_tree<int>(2, 3, int_data);
+	
+	test_tree<int>(2, 4, int_data);
+	
+	test_tree<int>(3, 5, int_data);
 	
 	std::cout << "* Map" << std::endl;
 	std::map<int, bool> map;
