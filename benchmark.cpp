@@ -15,86 +15,57 @@ double measure_time(F f)
 	return std::chrono::duration_cast<std::chrono::microseconds>( te - tb).count() / 1000000.0;
 }
 
-void print_result (double t1, double t2)
+void print_result (std::string label, double t)
 {
-	std::cout << "Map: " << t1 << std::endl;
-	std::cout << "Tree: " << t2 << std::endl;
-	std::cout << std::endl;
+	std::cout << label << ": " << t << "s" << std::endl;
 }
 
-template <typename T>
-void run_test (const std::vector<T> & data)
+template <typename T, typename C>
+void run_test (C & container, const std::vector<T> & data)
 {
-	std::map<T, bool> map;
-	abtree<T, bool> tree(2, 4);
-	double t1, t2;
+	double t;
 	
-	std::cout << "* Testing insert" << std::endl;
-	
-	t1 = measure_time([&map, &data] () {
+	t = measure_time([&container, &data] () {
 		for (T i: data) {
-			map.insert(std::make_pair(i, true));
+			container.insert(std::make_pair(i, true));
 		}
 	});
-	t2 = measure_time([&tree, &data] () {
+	print_result("Insert", t);
+	
+	t = measure_time([&container, &data] () {
 		for (T i: data) {
-			tree.insert(std::make_pair(i, true));
+			container.find(i);
 		}
 	});
+	print_result("Find", t);
 	
-	print_result(t1, t2);
-	
-	std::cout << "* Testing find" << std::endl;
-	
-	t1 = measure_time([&map, &data] () {
-		for (T i: data) {
-			map.find(i);
-		}
-	});
-	t2 = measure_time([&tree, &data] () {
-		for (T i: data) {
-			tree.find(i);
-		}
-	});
-	
-	print_result(t1, t2);
-	
-	std::cout << "* Testing traversal" << std::endl;
-	
-	t1 = measure_time([&map] () {
-		for (auto it = map.begin(); it != map.end(); ++it) {
+	t = measure_time([&container] () {
+		for (auto it = container.begin(); it != container.end(); ++it) {
 			
 		}
 	});
-	t2 = measure_time([&tree] () {
-		for (auto it = tree.begin(); it != tree.end(); ++it) {
-			
-		}
-	});
+	print_result("Traversal", t);
 	
-	print_result(t1, t2);
-	
-	std::cout << "* Testing delete" << std::endl;
-	
-	t1 = measure_time([&map, &data] () {
+	t = measure_time([&container, &data] () {
 		for (T i: data) {
-			map.erase(i);
+			container.erase(i);
 		}
 	});
-	t2 = measure_time([&tree, &data] () {
-		for (T i: data) {
-			tree.erase(i);
-		}
-	});
-	
-	print_result(t1, t2);
+	print_result("Delete", t);
 }
 
 int main (int argc, char ** argv)
 {
 	std::vector<int> int_data(1024 * 1024);
 	std::generate(int_data.begin(), int_data.end(), std::rand);
-	run_test<int>(int_data);
+	
+	std::cout << "* Map" << std::endl;
+	std::map<int, bool> map;
+	run_test<int>(map, int_data);
+	
+	std::cout << "* (2, 3) Tree" << std::endl;
+	abtree<int, bool> tree(2, 3);
+	run_test<int>(tree, int_data);
 	
 	return 0;
 }
