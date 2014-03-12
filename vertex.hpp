@@ -30,6 +30,13 @@ struct abtree_vertex
 	{
 		items = new item<TKey, TVal> * [max_children];
 		children = new abtree_vertex<TKey, TVal> * [max_children + 1];
+		
+		for (size_t i = 0; i < max_children; i++) {
+			items[i] = nullptr;
+		}
+		for (size_t i = 0; i <= max_children; i++) {
+			children[i] = nullptr;
+		}
 	}
 	
 	~abtree_vertex ()
