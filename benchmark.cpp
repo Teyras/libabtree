@@ -62,20 +62,43 @@ void test_tree (size_t a, size_t b, const std::vector<T> & data)
 	run_test<T>(tree, data);
 }
 
+template <typename T>
+void test_set (const std::vector<T> & data)
+{
+	test_tree<T>(2, 3, data);
+	
+	test_tree<T>(2, 4, data);
+	
+	test_tree<T>(3, 5, data);
+	
+	std::cout << "* Map" << std::endl;
+	std::map<T, bool> map;
+	run_test<T>(map, data);
+}
+
 int main (int argc, char ** argv)
 {
 	std::vector<int> int_data(1024 * 1024);
 	std::generate(int_data.begin(), int_data.end(), std::rand);
 	
-	test_tree<int>(2, 3, int_data);
+	std::cout << "== Testing int ==" << std::endl;
+	test_set<int>(int_data);
 	
-	test_tree<int>(2, 4, int_data);
+	auto rand_string = [] () {
+		size_t len = 20;
+		std::string str(len, 0);
+		char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789";
+		for (size_t i = 0; i < len; i++) {
+			str[i] = chars[std::rand() % sizeof(chars)];
+		}
+		return str;
+	};
 	
-	test_tree<int>(3, 5, int_data);
+	std::vector<std::string> string_data(1024 * 1024);
+	std::generate(string_data.begin(), string_data.end(), rand_string);
 	
-	std::cout << "* Map" << std::endl;
-	std::map<int, bool> map;
-	run_test<int>(map, int_data);
+	std::cout << "== Testing string ==" << std::endl;
+	test_set<std::string>(string_data);
 	
 	return 0;
 }
