@@ -59,6 +59,21 @@ void run_test (const std::vector<T> & data)
 	
 	print_result(t1, t2);
 	
+	std::cout << "* Testing traversal" << std::endl;
+	
+	t1 = measure_time([&map] () {
+		for (auto it = map.begin(); it != map.end(); ++it) {
+			
+		}
+	});
+	t2 = measure_time([&tree] () {
+		for (auto it = tree.begin(); it != tree.end(); ++it) {
+			
+		}
+	});
+	
+	print_result(t1, t2);
+	
 	std::cout << "* Testing delete" << std::endl;
 	
 	t1 = measure_time([&map, &data] () {
