@@ -50,7 +50,7 @@ private:
 		
 		auto parent = cursor->parent;
 		
-		size_t pos = parent->search(median->key());
+		size_t pos = parent->search(median->first);
 		for (size_t i = parent->item_count; i > pos; i--) {
 			parent->items[i] = parent->items[i - 1];
 		}
@@ -126,7 +126,7 @@ private:
 	{
 		size_t pos;
 		if (left->parent != root) {
-			pos = left->parent->parent->search(left->parent->items[key_pos]->key());
+			pos = left->parent->parent->search(left->parent->items[key_pos]->first);
 		}
 		
 		left->items[left->item_count] = right->parent->items[key_pos];
@@ -212,7 +212,7 @@ public:
 			cursor = root;
 		}
 		size_t i = cursor->search(key);
-		if (i < cursor->item_count && cursor->items[i]->key() == key) {
+		if (i < cursor->item_count && cursor->items[i]->first == key) {
 			return iterator(cursor, i);
 		}
 		if (cursor->children[i] == nullptr) {
@@ -244,7 +244,7 @@ public:
 		
 		while (cursor->children[0] != nullptr) {
 			if (i < cursor->item_count) {
-				if (cursor->items[i]->key() == key) {
+				if (cursor->items[i]->first == key) {
 					return iterator(cursor, i);
 				}
 				back = std::make_pair(cursor, i);
@@ -269,7 +269,7 @@ public:
 		
 		while (cursor->children[0] != nullptr) {
 			if (i < cursor->item_count) {
-				if (cursor->items[i]->key() == key) {
+				if (cursor->items[i]->first == key) {
 					cursor = cursor->children[i + 1];
 					while (cursor->children[0] != nullptr) {
 						cursor = cursor->children[0];
@@ -282,7 +282,7 @@ public:
 			i = cursor->search(key);
 		}
 		
-		if (i < cursor->item_count && cursor->items[i]->key() == key) {
+		if (i < cursor->item_count && cursor->items[i]->first == key) {
 			i++;
 		}
 		
@@ -294,13 +294,13 @@ public:
 		return iterator(cursor, i);
 	}
 	
-	iterator insert (value_type pair)
+	iterator insert (const value_type & pair)
 	{
-		auto new_item = new item<TKey, TVal>(pair);
+		auto new_item = new value_type(pair);
 		auto cursor = root;
 		while (true) {
-			size_t i = cursor->search(new_item->key());
-			if (i < cursor->item_count && cursor->items[i]->key() == new_item->key()) {
+			size_t i = cursor->search(new_item->first);
+			if (i < cursor->item_count && cursor->items[i]->first == new_item->first) {
 				delete cursor->items[i];
 				cursor->items[i] = new_item;
 				return iterator(cursor, i);
@@ -311,7 +311,7 @@ public:
 			cursor = cursor->children[i];
 		}
 		
-		size_t i = cursor->search(new_item->key());
+		size_t i = cursor->search(new_item->first);
 		if (i < cursor->item_count) {
 			for (size_t j = cursor->item_count; j > i; j--) {
 				cursor->items[j] = cursor->items[j - 1];
@@ -335,7 +335,7 @@ public:
 		size_t i, pos;
 		while (true) {
 			i = cursor->search(key);
-			if (i < cursor->item_count && cursor->items[i]->key() == key) {
+			if (i < cursor->item_count && cursor->items[i]->first == key) {
 				break;
 			}
 			if (cursor->children[0] == nullptr) {
@@ -353,7 +353,7 @@ public:
 			}
 			cursor->items[i] = cursor_leaf->items[cursor_leaf->item_count - 1];
 			cursor = cursor_leaf;
-			pos = cursor_leaf->parent->search(cursor->items[cursor->item_count -1]->key());
+			pos = cursor_leaf->parent->search(cursor->items[cursor->item_count -1]->first);
 		} else {
 			for (size_t j = i; j < cursor->item_count - 1; j++) {
 				cursor->items[j] = cursor->items[j + 1];
@@ -399,7 +399,7 @@ public:
 			for (size_t j = 0; j < 4 * indent; j++) {
 				std::cout << " ";
 			}
-			std::cout << "*Key: " << cursor->items[i]->key() << std::endl;
+			std::cout << "*Key: " << cursor->items[i]->first << std::endl;
 			
 		}
 		if (cursor->children[i] != nullptr) {
@@ -409,7 +409,7 @@ public:
 	
 	TKey get_root_key ()
 	{
-		return root->items[0]->key();
+		return root->items[0]->first;
 	}
 };
 

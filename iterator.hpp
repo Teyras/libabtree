@@ -39,7 +39,7 @@ public:
 				if (vertex_->parent == nullptr) {
 					break; // incrementing end
 				} else {
-					position_ = vertex_->parent->search(vertex_->items[0]->key());
+					position_ = vertex_->parent->search(vertex_->items[0]->first);
 					vertex_ = vertex_->parent;
 				}
 			}
@@ -73,7 +73,7 @@ public:
 				if (vertex_->parent == nullptr) {
 					break; // decrementing start
 				} else {
-					position_ = vertex_->parent->search(vertex_->items[0]->key());
+					position_ = vertex_->parent->search(vertex_->items[0]->first);
 					vertex_ = vertex_->parent;
 				}
 			}
@@ -92,12 +92,12 @@ public:
 	
 	std::pair<const TKey, TVal> & operator* ()
 	{
-		return vertex_->items[position_]->pair;
+		return *(vertex_->items[position_]);
 	}
 	
 	std::pair<const TKey, TVal> * operator-> ()
 	{
-		return &vertex_->items[position_]->pair;
+		return vertex_->items[position_];
 	}
 	
 	bool operator== (const abtree_iterator & it)
