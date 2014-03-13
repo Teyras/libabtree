@@ -329,7 +329,7 @@ public:
 		return find(pair.first);
 	}
 	
-	void erase (TKey key)
+	void erase (const TKey & key)
 	{
 		auto cursor = root;
 		size_t i, pos;

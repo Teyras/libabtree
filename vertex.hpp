@@ -30,7 +30,7 @@ struct abtree_vertex
 		delete[] children;
 	}
 	
-	size_t search (TKey key) const
+	size_t search (const TKey & key) const
 	{
 		size_t i, step;
 		size_t first = 0;
