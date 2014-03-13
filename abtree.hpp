@@ -206,19 +206,21 @@ public:
 	}
 	
 	template<typename iterator>
-	iterator do_find (const TKey & key, vertex * cursor = nullptr)
+	iterator do_find (const TKey & key)
 	{
-		if (cursor == nullptr) {
-			cursor = root;
-		}
+		vertex * cursor = root;
 		size_t i = cursor->search(key);
-		if (i < cursor->item_count && cursor->items[i]->first == key) {
-			return iterator(cursor, i);
+		
+		while (true) {
+			if (i < cursor->item_count && cursor->items[i]->first == key) {
+				return iterator(cursor, i);
+			}
+			if (cursor->children[i] == nullptr) {
+				return end();
+			}
+			cursor = cursor->children[i];
+			i = cursor->search(key);
 		}
-		if (cursor->children[i] == nullptr) {
-			return end();
-		}
-		return do_find<iterator>(key, cursor->children[i]);
 	}
 	
 	iterator find (const TKey & key)
