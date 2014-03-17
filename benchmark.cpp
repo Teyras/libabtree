@@ -71,6 +71,10 @@ void test_set (const std::vector<T> & data)
 	
 	test_tree<T>(3, 5, data);
 	
+	test_tree<T>(128, 255, data);
+	
+	test_tree<T>(512, 1023, data);
+	
 	std::cout << "* Map" << std::endl;
 	std::map<T, bool> map;
 	run_test<T>(map, data);
