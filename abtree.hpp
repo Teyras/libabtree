@@ -322,6 +322,12 @@ public:
 		return find(key)->second;
 	}
 	
+	const TVal & at (const TKey & key) const
+	{
+		const_iterator it = find(key);
+		return it->second;
+	}
+	
 	iterator lower_bound (const key_type & key)
 	{
 		return do_lower_bound<iterator>(key);
