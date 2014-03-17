@@ -8,6 +8,13 @@
 
 template <typename TKey, typename TVal>
 class abtree {
+public:
+	typedef abtree_iterator<TKey, TVal> iterator;
+	typedef abtree_iterator<TKey, TVal const> const_iterator;
+	typedef TKey key_type;
+	typedef TVal mapped_type;
+	typedef std::pair<const key_type, mapped_type> value_type;
+	
 private:
 	typedef abtree_vertex<TKey, TVal> vertex;
 	
@@ -159,39 +166,9 @@ private:
 		}
 		delete right;
 	}
-public:
-	typedef abtree_iterator<TKey, TVal> iterator;
-	typedef abtree_iterator<TKey, TVal const> const_iterator;
-	typedef TKey key_type;
-	typedef TVal mapped_type;
-	typedef std::pair<const key_type, mapped_type> value_type;
 	
-	abtree (size_t a, size_t b): a(a), b(b), size_(0)
-	{
-		root = new vertex(b);
-	}
-	
-	~abtree ()
-	{
-		std::queue<vertex *> queue;
-		queue.push(root);
-		
-		while (queue.size() > 0) {
-			vertex * cursor = queue.front();
-			for (size_t i = 0; i < cursor->item_count; i++) {
-				delete cursor->items[i];
-			}
-			for (size_t i = 0; i <= cursor->item_count; i++) {
-				if (cursor->children[i] != nullptr) {
-					queue.push(cursor->children[i]);
-				}
-			}
-			delete cursor;
-			queue.pop();
-		}
-	}
-	
-	iterator begin ()
+	template <typename iterator>
+	iterator do_begin () const
 	{
 		auto cursor = root;
 		while (cursor->children[0] != nullptr) {
@@ -200,13 +177,14 @@ public:
 		return iterator(cursor, 0);
 	}
 	
-	iterator end ()
+	template <typename iterator>
+	iterator do_end () const
 	{
 		return iterator(root, root->item_count);
 	}
 	
-	template<typename iterator>
-	iterator do_find (const TKey & key)
+	template <typename iterator>
+	iterator do_find (const TKey & key) const
 	{
 		vertex * cursor = root;
 		size_t i = cursor->search(key);
@@ -216,29 +194,15 @@ public:
 				return iterator(cursor, i);
 			}
 			if (cursor->children[i] == nullptr) {
-				return end();
+				return do_end<iterator>();
 			}
 			cursor = cursor->children[i];
 			i = cursor->search(key);
 		}
 	}
 	
-	iterator find (const TKey & key)
-	{
-		return do_find<iterator>(key);
-	}
-	
-	const_iterator find (const TKey & key) const
-	{
-		return do_find<const_iterator>(key);
-	}
-	
-	TVal & at (const TKey & key)
-	{
-		return find(key)->second;
-	}
-	
-	iterator lower_bound (const key_type & key)
+	template <typename iterator>
+	iterator do_lower_bound (const key_type & key) const
 	{
 		auto cursor = root;
 		size_t i = cursor->search(key);
@@ -263,7 +227,8 @@ public:
 		return iterator(cursor, i);
 	}
 	
-	iterator upper_bound (const key_type & key)
+	template <typename iterator>
+	iterator do_upper_bound (const key_type & key) const
 	{
 		auto cursor = root;
 		size_t i = cursor->search(key);
@@ -294,6 +259,87 @@ public:
 		}
 		
 		return iterator(cursor, i);
+	}
+	
+public:
+	abtree (size_t a, size_t b): a(a), b(b), size_(0)
+	{
+		root = new vertex(b);
+	}
+	
+	~abtree ()
+	{
+		std::queue<vertex *> queue;
+		queue.push(root);
+		
+		while (queue.size() > 0) {
+			vertex * cursor = queue.front();
+			for (size_t i = 0; i < cursor->item_count; i++) {
+				delete cursor->items[i];
+			}
+			for (size_t i = 0; i <= cursor->item_count; i++) {
+				if (cursor->children[i] != nullptr) {
+					queue.push(cursor->children[i]);
+				}
+			}
+			delete cursor;
+			queue.pop();
+		}
+	}
+	
+	iterator begin ()
+	{
+		return do_begin<iterator>();
+	}
+	
+	const_iterator cbegin () const
+	{
+		return do_begin<const_iterator>();
+	}
+	
+	iterator end ()
+	{
+		return do_end<iterator>();
+	}
+	
+	const_iterator cend () const
+	{
+		return do_end<const_iterator>();
+	}
+	
+	iterator find (const TKey & key)
+	{
+		return do_find<iterator>(key);
+	}
+	
+	const_iterator find (const TKey & key) const
+	{
+		return do_find<const_iterator>(key);
+	}
+	
+	TVal & at (const TKey & key)
+	{
+		return find(key)->second;
+	}
+	
+	iterator lower_bound (const key_type & key)
+	{
+		return do_lower_bound<iterator>(key);
+	}
+	
+	const_iterator lower_bound (const key_type & key) const
+	{
+		return do_lower_bound<const_iterator>(key);
+	}
+	
+	iterator upper_bound (const key_type & key)
+	{
+		return do_upper_bound<iterator>(key);
+	}
+	
+	const_iterator upper_bound (const key_type & key) const
+	{
+		return do_upper_bound<const_iterator>(key);
 	}
 	
 	iterator insert (const value_type & pair)
@@ -376,12 +422,12 @@ public:
 		size_--;
 	}
 	
-	size_t size ()
+	size_t size () const
 	{
 		return size_;
 	}
 	
-	bool empty ()
+	bool empty () const
 	{
 		return size_ == 0;
 	}
