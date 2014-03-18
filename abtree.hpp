@@ -95,7 +95,7 @@ private:
 	 * @param parent The parent of the vertex to be refilled
 	 * @param i The position of the vertex in the parent's children
 	 */
-	vertex * refill_vertex (vertex * parent, size_t i)
+	refill_vertex (vertex * parent, size_t i)
 	{
 		auto cursor = parent->children[i];
 		if (i > 0) {
@@ -513,10 +513,9 @@ public:
 		cursor->item_count--;
 		
 		if (cursor != root && cursor->item_count < a - 1) {
-			cursor = refill_vertex(cursor->parent, pos);
+			refill_vertex(cursor->parent, pos);
 		}
 		
-// 		cursor->items[cursor->item_count - 1] = nullptr;
 		size_--;
 	}
 	
