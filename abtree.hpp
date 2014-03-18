@@ -6,6 +6,10 @@
 #include "vertex.hpp"
 #include "iterator.hpp"
 
+/**
+ * A generic associative container that uses (a, b)-trees to store data.
+ * The keys are always stored in order and grouped with associated values using std::pair
+ */
 template <typename TKey, typename TVal>
 class abtree {
 public:
@@ -22,6 +26,13 @@ private:
 	const size_t a, b;
 	size_t size_;
 	
+	/**
+	 * Split vertex pointed to by cursor in half. The middle key of this vertex gets
+	 * transferred to the parent vertex, which might cause a recursive call of this function.
+	 * If the root vertex is reached this way, a new root is created and the tree's depth is 
+	 * increased by one.
+	 * @param cursor the vertex to be split
+	 */
 	void split_vertex (vertex * cursor)
 	{
 		size_t middle = (b / 2);
@@ -76,6 +87,14 @@ private:
 		}
 	}
 	
+	/**
+	 * Refill the i-th child of the vertex pointed to by parent, so that it has at least "a" children
+	 * (or 2 in case it's the root vertex).
+	 * Refilling means either transferring an item and a child from a neighbour that has more than a children
+	 * or merging the vertex with its neighbour.
+	 * @param parent The parent of the vertex to be refilled
+	 * @param i The position of the vertex in the parent's children
+	 */
 	vertex * refill_vertex (vertex * parent, size_t i)
 	{
 		auto cursor = parent->children[i];
@@ -129,6 +148,16 @@ private:
 		}
 	}
 	
+	/**
+	 * Transfer all items and children from the vertex pointed to by left to the vertex pointed to by right.
+	 * To divide the children, a key must be transferred from the parent vertex. After this, it might be
+	 * necessary to refill the parent recursively.
+	 * If the last two children of the root vertex get merged this way, the resulting vertex becomes the 
+	 * new root and the tree's height decreases by one.
+	 * @param left The left vertex
+	 * @param right The right vertex (will get deleted)
+	 * @param key_pos The position of the key in the parent vertex that divides the left and right vertices
+	 */
 	void merge_vertices (vertex * left, vertex * right, size_t key_pos)
 	{
 		size_t pos;
@@ -167,6 +196,9 @@ private:
 		delete right;
 	}
 	
+	/**
+	 * A function template for the begin() and cbegin() methods
+	 */
 	template <typename iterator>
 	iterator do_begin () const
 	{
@@ -177,12 +209,18 @@ private:
 		return iterator(cursor, 0);
 	}
 	
+	/**
+	 * A function template for the end() and cend() methods
+	 */
 	template <typename iterator>
 	iterator do_end () const
 	{
 		return iterator(root, root->item_count);
 	}
 	
+	/**
+	 * A function template for the find() method (this method can return an iterator or a const_iterator)
+	 */
 	template <typename iterator>
 	iterator do_find (const TKey & key) const
 	{
@@ -201,6 +239,9 @@ private:
 		}
 	}
 	
+	/**
+	 * A function template for the lower_bound() method (this method can return an iterator or a const_iterator)
+	 */
 	template <typename iterator>
 	iterator do_lower_bound (const key_type & key) const
 	{
@@ -227,6 +268,9 @@ private:
 		return iterator(cursor, i);
 	}
 	
+	/**
+	 * A function template for the upper_bound() method (this method can return an iterator or a const_iterator)
+	 */
 	template <typename iterator>
 	iterator do_upper_bound (const key_type & key) const
 	{
@@ -262,11 +306,19 @@ private:
 	}
 	
 public:
+	/**
+	 * The basic constructor
+	 * @param a The minimum number of children for all non-root vertices
+	 * @param b The maximum number of children for all vertices
+	 */
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
 	{
 		root = new vertex(b);
 	}
 	
+	/**
+	 * The destructor. Uses BFS to destroy all the vertices.
+	 */
 	~abtree ()
 	{
 		std::queue<vertex *> queue;
@@ -287,6 +339,9 @@ public:
 		}
 	}
 	
+	/**
+	 * @return an iterator to the first (and smallest) item in the tree
+	 */
 	iterator begin ()
 	{
 		return do_begin<iterator>();
@@ -297,6 +352,9 @@ public:
 		return do_begin<const_iterator>();
 	}
 	
+	/**
+	 * @return an iterator pointing to the item that would follow the last (and largest) item in the tree
+	 */
 	iterator end ()
 	{
 		return do_end<iterator>();
@@ -307,6 +365,12 @@ public:
 		return do_end<const_iterator>();
 	}
 	
+	/**
+	 * If an item with specified key is present in the tree, return an iterator pointing to it.
+	 * If it is not, return end().
+	 * @param key The key to search for
+	 * @return an iterator pointing to given item or past the end
+	 */
 	iterator find (const TKey & key)
 	{
 		return do_find<iterator>(key);
@@ -317,6 +381,11 @@ public:
 		return do_find<const_iterator>(key);
 	}
 	
+	/**
+	 * Return a reference to the value of the item with given key if it is present in the tree,
+	 * throw an exception otherwise.
+	 * @return a reference to the value with specified key
+	 */
 	TVal & at (const TKey & key)
 	{
 		return find(key)->second;
@@ -328,6 +397,12 @@ public:
 		return it->second;
 	}
 	
+	/**
+	 * Returns an iterator pointing to the smallest item that has a key larger or equal to given key.
+	 * If there's no such item in the tree, returns end().
+	 * @param key The key to search for
+	 * @return An iterator pointing to desired item or end()
+	 */
 	iterator lower_bound (const key_type & key)
 	{
 		return do_lower_bound<iterator>(key);
@@ -338,6 +413,12 @@ public:
 		return do_lower_bound<const_iterator>(key);
 	}
 	
+	/**
+	 * Returns an iterator pointing to the smallest item that has a key larger than given key.
+	 * If there's no such item in the tree, returns end().
+	 * @param key The key to search for
+	 * @return An iterator pointing to desired item or end()
+	 */
 	iterator upper_bound (const key_type & key)
 	{
 		return do_upper_bound<iterator>(key);
@@ -348,6 +429,13 @@ public:
 		return do_upper_bound<const_iterator>(key);
 	}
 	
+	/**
+	 * Inserts a new item into the tree. If there's already an item with the same key in the tree,
+	 * it gets replaced by the new item.
+	 * If the insertion causes a vertex to have more than b children, split_vertex() is called on it.
+	 * @param pair The item that gets copied into the tree
+	 * @return An iterator pointing to the inserted item
+	 */
 	iterator insert (const value_type & pair)
 	{
 		auto new_item = new value_type(pair);
@@ -383,6 +471,10 @@ public:
 		return find(pair.first);
 	}
 	
+	/**
+	 * Erase the item with given key from the tree. If such item isn't present in the tree, don't do anything.
+	 * @param key The key of the item to be erased
+	 */
 	void erase (const TKey & key)
 	{
 		auto cursor = root;
@@ -428,11 +520,17 @@ public:
 		size_--;
 	}
 	
+	/**
+	 * @return The total number of items in the tree
+	 */
 	size_t size () const
 	{
 		return size_;
 	}
 	
+	/**
+	 * @return True if the tree is empty, false otherwise
+	 */
 	bool empty () const
 	{
 		return size_ == 0;
