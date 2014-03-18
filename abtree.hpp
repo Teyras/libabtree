@@ -473,6 +473,7 @@ public:
 	
 	/**
 	 * Erase the item with given key from the tree. If such item isn't present in the tree, don't do anything.
+	 * If the deletion causes a vertex to have less than a children, refill_vertex is called on it.
 	 * @param key The key of the item to be erased
 	 */
 	void erase (const TKey & key)
