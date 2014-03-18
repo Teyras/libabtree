@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+/**
+ * A vertex of an (a, b)-tree
+ */
 template <typename TKey, typename TVal>
 struct abtree_vertex
 {
@@ -11,6 +14,11 @@ struct abtree_vertex
 	std::pair<const TKey, TVal> ** items;
 	abtree_vertex ** children;
 	
+	/**
+	 * The default constructor. Allocates memory for given amount of items and children.
+	 * One more place in memory is allocated to simplify splitting.
+	 * @param max_children specifies the maximum amount of children
+	 */
 	abtree_vertex (size_t max_children): parent(nullptr), item_count(0)
 	{
 		items = new std::pair<const TKey, TVal> * [max_children];
@@ -30,6 +38,12 @@ struct abtree_vertex
 		delete[] children;
 	}
 	
+	/**
+	 * Returns the index of the first item whose key is larger than or equal than given key
+	 * (in other words, it tells us which child should be searched next).
+	 * @param key the key to search for
+	 * @return the index of the desired key
+	 */
 	size_t search (const TKey & key) const
 	{
 		size_t i, step;
