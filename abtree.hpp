@@ -2,6 +2,7 @@
 #define _ABTREE_HPP_
 
 #include <iostream>
+#include <stdexcept>
 #include <queue>
 #include "vertex.hpp"
 #include "iterator.hpp"
@@ -95,7 +96,7 @@ private:
 	 * @param parent The parent of the vertex to be refilled
 	 * @param i The position of the vertex in the parent's children
 	 */
-	refill_vertex (vertex * parent, size_t i)
+	void refill_vertex (vertex * parent, size_t i)
 	{
 		auto cursor = parent->children[i];
 		if (i > 0) {
@@ -117,10 +118,8 @@ private:
 				neighbour->items[neighbour->item_count - 1] = nullptr;
 				neighbour->children[neighbour->item_count] = nullptr;
 				neighbour->item_count--;
-				return cursor;
 			} else {
 				merge_vertices(neighbour, cursor, i - 1);
-				return neighbour;
 			}
 		} else {
 			auto neighbour = cursor->parent->children[1];
@@ -144,7 +143,6 @@ private:
 			} else {
 				merge_vertices(cursor, neighbour, 0);
 			}
-			return cursor;
 		}
 	}
 	
@@ -385,16 +383,24 @@ public:
 	 * Return a reference to the value of the item with given key if it is present in the tree,
 	 * throw an exception otherwise.
 	 * @return a reference to the value with specified key
+	 * @throws std::out_of_range
 	 */
 	TVal & at (const TKey & key)
 	{
-		return find(key)->second;
+		iterator it = find(key);
+		if (it != end()) {
+			return it->second;
+		}
+		throw std::out_of_range();
 	}
 	
 	const TVal & at (const TKey & key) const
 	{
 		const_iterator it = find(key);
-		return it->second;
+		if (it != end()) {
+			return it->second;
+		}
+		throw std::out_of_range();
 	}
 	
 	/**
