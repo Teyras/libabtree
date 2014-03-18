@@ -306,11 +306,15 @@ private:
 public:
 	/**
 	 * The basic constructor
-	 * @param a The minimum number of children for all non-root vertices
-	 * @param b The maximum number of children for all vertices
+	 * @param a The minimum number of children for all non-root vertices (has to be at least 2)
+	 * @param b The maximum number of children for all vertices (has to be at least (2 * a) - 1)
+	 * @throws std::invalid_argument if a and b don't meet (a, b)-tree conditions
 	 */
 	abtree (size_t a, size_t b): a(a), b(b), size_(0)
 	{
+		if (a < 2 || b < (2 * a) - 1) {
+			throw std::invalid_argument(a < 2 ? "a" : "b");
+		}
 		root = new vertex(b);
 	}
 	
@@ -383,7 +387,7 @@ public:
 	 * Return a reference to the value of the item with given key if it is present in the tree,
 	 * throw an exception otherwise.
 	 * @return a reference to the value with specified key
-	 * @throws std::out_of_range
+	 * @throws std::out_of_range if given key is not found
 	 */
 	TVal & at (const TKey & key)
 	{
