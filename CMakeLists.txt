@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
 
 # add_library(libabtree STATIC abtree.h)
 
-add_executable(test main.cpp)
+add_executable(test test.cpp)
 
 add_executable(benchmark benchmark.cpp)
 
