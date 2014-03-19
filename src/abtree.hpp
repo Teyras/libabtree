@@ -33,8 +33,9 @@ private:
 	 * If the root vertex is reached this way, a new root is created and the tree's depth is 
 	 * increased by one.
 	 * @param cursor the vertex to be split
+	 * @return the newly created vertex
 	 */
-	void split_vertex (vertex * cursor)
+	vertex * split_vertex (vertex * cursor)
 	{
 		size_t middle = (b / 2);
 		vertex * new_vertex = new vertex(b);
@@ -64,7 +65,7 @@ private:
 			root->item_count++;
 			cursor->parent = root;
 			new_vertex->parent = root;
-			return;
+			return new_vertex;
 		}
 		
 		auto parent = cursor->parent;
@@ -86,6 +87,8 @@ private:
 		if (parent->item_count == b) {
 			split_vertex(parent);
 		}
+		
+		return new_vertex;
 	}
 	
 	/**
@@ -473,12 +476,25 @@ public:
 		cursor->items[i] = new_item;
 		cursor->item_count++;
 		
-		if (cursor->item_count == b) {
-			split_vertex(cursor);
-		}
-		
 		size_++;
-		return find(pair.first);
+		
+		if (cursor->item_count == b) {
+			vertex * old = cursor;
+			cursor = split_vertex(cursor);
+			
+			i = cursor->search(new_item->first);
+			if (i >= cursor->item_count || cursor->items[i]->first != new_item->first) {
+				cursor = old;
+				i = cursor->search(new_item->first);
+			}
+			if (i >= cursor->item_count || cursor->items[i]->first != new_item->first) {
+				cursor = cursor->parent;
+				i = cursor->search(new_item->first);
+			}
+		}
+
+// 		return iterator(cursor, i);
+		return find(new_item->first);
 	}
 	
 	/**

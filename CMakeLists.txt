@@ -6,8 +6,10 @@ set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
 
 # add_library(libabtree STATIC abtree.h)
 
-add_executable(test test.cpp)
+add_executable(test src/test.cpp)
 
-add_executable(benchmark benchmark.cpp)
+add_executable(benchmark src/benchmark.cpp)
 
 # install(TARGETS libabtree RUNTIME DESTINATION bin)
+
+add_subdirectory(src)
