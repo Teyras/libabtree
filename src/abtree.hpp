@@ -345,8 +345,9 @@ public:
 	}
 	
 	/**
-	 * @return an iterator to the first (and smallest) item in the tree
+	 * @name Return an iterator to the first (and smallest) item in the tree
 	 */
+	//@{
 	iterator begin ()
 	{
 		return do_begin<iterator>();
@@ -356,10 +357,12 @@ public:
 	{
 		return do_begin<const_iterator>();
 	}
+	//@}
 	
 	/**
-	 * @return an iterator pointing to the item that would follow the last (and largest) item in the tree
+	 * @name Return an iterator pointing to the item that would follow the last (and largest) item in the tree
 	 */
+	//@{
 	iterator end ()
 	{
 		return do_end<iterator>();
@@ -369,13 +372,15 @@ public:
 	{
 		return do_end<const_iterator>();
 	}
+	//@}
 	
 	/**
-	 * If an item with specified key is present in the tree, return an iterator pointing to it.
+	 * @name If an item with specified key is present in the tree, return an iterator pointing to it.
 	 * If it is not, return end().
 	 * @param key The key to search for
 	 * @return an iterator pointing to given item or past the end
 	 */
+	//@{
 	iterator find (const TKey & key)
 	{
 		return do_find<iterator>(key);
@@ -385,13 +390,15 @@ public:
 	{
 		return do_find<const_iterator>(key);
 	}
+	//@}
 	
 	/**
-	 * Return a reference to the value of the item with given key if it is present in the tree,
+	 * @name Return a reference to the value of the item with given key if it is present in the tree,
 	 * throw an exception otherwise.
 	 * @return a reference to the value with specified key
 	 * @throws std::out_of_range if given key is not found
 	 */
+	//@{
 	TVal & at (const TKey & key)
 	{
 		iterator it = find(key);
@@ -409,13 +416,15 @@ public:
 		}
 		throw std::out_of_range();
 	}
+	//@}
 	
 	/**
-	 * Returns an iterator pointing to the smallest item that has a key larger or equal to given key.
+	 * @name Returns an iterator pointing to the smallest item that has a key larger or equal to given key.
 	 * If there's no such item in the tree, returns end().
 	 * @param key The key to search for
 	 * @return An iterator pointing to desired item or end()
 	 */
+	//@{
 	iterator lower_bound (const key_type & key)
 	{
 		return do_lower_bound<iterator>(key);
@@ -425,13 +434,15 @@ public:
 	{
 		return do_lower_bound<const_iterator>(key);
 	}
+	//@}
 	
 	/**
-	 * Returns an iterator pointing to the smallest item that has a key larger than given key.
+	 * @name Returns an iterator pointing to the smallest item that has a key larger than given key.
 	 * If there's no such item in the tree, returns end().
 	 * @param key The key to search for
 	 * @return An iterator pointing to desired item or end()
 	 */
+	//@{
 	iterator upper_bound (const key_type & key)
 	{
 		return do_upper_bound<iterator>(key);
@@ -441,6 +452,7 @@ public:
 	{
 		return do_upper_bound<const_iterator>(key);
 	}
+	//@}
 	
 	/**
 	 * Inserts a new item into the tree. If there's already an item with the same key in the tree,
