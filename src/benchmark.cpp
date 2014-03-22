@@ -17,7 +17,7 @@ double measure_time(F f)
 
 void print_result (std::string label, double t)
 {
-	std::cout << label << ": " << t << "s" << std::endl;
+	std::cout << label.c_str() << ": " << t << "s" << std::endl;
 }
 
 template <typename T, typename C>

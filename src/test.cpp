@@ -5,7 +5,7 @@
 
 void msg (std::string text)
 {
-	std::cout << "* " << text << std::endl;
+	std::cout << "* " << text.c_str() << std::endl;
 }
 
 void report (bool value)
