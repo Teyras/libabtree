@@ -548,7 +548,8 @@ public:
 	}
 	
 	/**
-	 * @return The total number of items in the tree
+	 * Get the total number of items in the tree
+	 * @return the number of items
 	 */
 	size_t size () const
 	{
@@ -556,6 +557,7 @@ public:
 	}
 	
 	/**
+	 * Find out whether the tree is empty
 	 * @return True if the tree is empty, false otherwise
 	 */
 	bool empty () const
