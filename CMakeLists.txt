@@ -11,5 +11,3 @@ add_executable(test src/test.cpp)
 add_executable(benchmark src/benchmark.cpp)
 
 # install(TARGETS libabtree RUNTIME DESTINATION bin)
-
-add_subdirectory(src)
