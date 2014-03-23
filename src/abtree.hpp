@@ -490,22 +490,11 @@ public:
 		
 		size_++;
 		
-		if (cursor->item_count == b) {
-			vertex * old = cursor;
-			cursor = split_vertex(cursor);
-			
-			i = cursor->search(new_item->first);
-			if (i >= cursor->item_count || cursor->items[i]->first != new_item->first) {
-				cursor = old;
-				i = cursor->search(new_item->first);
-			}
-			if (i >= cursor->item_count || cursor->items[i]->first != new_item->first) {
-				cursor = cursor->parent;
-				i = cursor->search(new_item->first);
-			}
+		if (cursor->item_count < b) {
+			return iterator(cursor, i);
 		}
-
-// 		return iterator(cursor, i);
+		
+		cursor = split_vertex(cursor);
 		return find(new_item->first);
 	}
 	
